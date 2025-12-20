@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新建标签页</title>
+    <title>新标签页</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Lucide Icons -->
@@ -250,9 +250,9 @@
             const hour = now.getHours();
             let greet = '';
             if (hour < 5) greet = '注意休息';
-            else if (hour < 11) greet = '早安，计算机研究生';
+            else if (hour < 11) greet = '早安，开心的一天又开始了';
             else if (hour < 13) greet = '午饭时间';
-            else if (hour < 18) greet = '下午好，代码写得顺吗？';
+            else if (hour < 18) greet = '下午好，继续加油吧';
             else if (hour < 23) greet = '晚上好，享受自由时间';
             else greet = '夜深了，早点睡';
             document.getElementById('greeting-text').innerText = greet;
@@ -554,5 +554,6 @@
 </body>
 
 </html>
+
 
 
