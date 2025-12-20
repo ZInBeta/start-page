@@ -8,11 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入 Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 引入 Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
                     animation: {
                         'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
                     },
@@ -27,6 +35,8 @@
         }
     </script>
     <style>
+        body { font-family: 'Outfit', sans-serif; }
+        
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -35,6 +45,17 @@
         .glass-panel {
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* 隐藏搜索框默认的 X */
+        input[type="search"]::-webkit-search-decoration,
+        input[type="search"]::-webkit-search-cancel-button,
+        input[type="search"]::-webkit-search-results-button,
+        input[type="search"]::-webkit-search-results-decoration { display: none; }
+        
+        /* 图标加载失败时的样式 */
+        .favicon-img {
+            object-fit: contain;
         }
     </style>
 </head>
@@ -64,12 +85,12 @@
     </header>
 
     <!-- 主体内容 -->
-    <main id="main-container" class="flex-1 container mx-auto px-4 flex flex-col justify-center items-center max-w-5xl transition-all duration-500 py-10">
+    <main id="main-container" class="flex-1 container mx-auto px-4 flex flex-col justify-center items-center max-w-4xl transition-all duration-500 py-10">
         
         <!-- 欢迎语 & 时钟 -->
-        <div id="greeting-section" class="text-center mb-10 animate-fade-in-up transition-all duration-300">
-            <h1 id="clock-time" class="text-6xl md:text-8xl font-light tracking-tight mb-4 tabular-nums cursor-default select-none">00:00</h1>
-            <p id="greeting-text" class="text-lg md:text-xl font-light text-gray-500 dark:text-slate-400">Loading...</p>
+        <div id="greeting-section" class="text-center mb-12 animate-fade-in-up transition-all duration-300">
+            <h1 id="clock-time" class="text-7xl md:text-8xl font-medium tracking-tight mb-4 tabular-nums cursor-default select-none text-gray-800 dark:text-white">00:00</h1>
+            <p id="greeting-text" class="text-lg md:text-xl font-normal text-gray-500 dark:text-slate-400">Loading...</p>
         </div>
 
         <!-- 搜索框 -->
@@ -78,16 +99,17 @@
                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors text-gray-400 group-hover:text-blue-500 dark:text-slate-500">
                     <i data-lucide="search" class="w-[22px] h-[22px]"></i>
                 </div>
-                <input id="search-input" type="text" placeholder="Search Google..." class="w-full pl-14 pr-36 py-4 rounded-full text-lg shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-300 outline-none border bg-white border-transparent focus:border-blue-100 text-gray-800 placeholder-gray-300 dark:bg-slate-800 dark:border-slate-700 dark:focus:border-slate-600 dark:text-white dark:placeholder-slate-500">
+                <input id="search-input" type="text" placeholder="Search Bing..." class="w-full pl-14 pr-36 py-4 rounded-full text-lg shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-300 outline-none border bg-white border-transparent focus:border-blue-100 text-gray-800 placeholder-gray-300 dark:bg-slate-800 dark:border-slate-700 dark:focus:border-slate-600 dark:text-white dark:placeholder-slate-500">
                 <div class="absolute inset-y-0 right-2 flex items-center">
                     <div class="flex items-center p-1 rounded-full bg-gray-100 dark:bg-slate-700/50">
-                        <button type="button" data-engine="google" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-white">G</button>
-                        <button type="button" data-engine="bing" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200">B</button>
+                        <!-- 调整顺序：Bing 在前，Google 在后 -->
+                        <button type="button" data-engine="bing" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-white">B</button>
+                        <button type="button" data-engine="google" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200">G</button>
                         
                         <!-- 分割线 -->
                         <div class="w-px h-4 mx-2 bg-gray-300 dark:bg-slate-600"></div>
                         
-                        <!-- 钱包按钮 (隐蔽入口) -->
+                        <!-- 钱包按钮 -->
                         <button type="button" onclick="openFinanceModal()" class="p-1.5 rounded-full text-gray-400 hover:text-green-600 dark:text-slate-400 dark:hover:text-green-400 transition-colors" title="我的钱包">
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                         </button>
@@ -96,8 +118,8 @@
             </form>
         </div>
 
-        <!-- 链接卡片网格 -->
-        <div id="categories-grid" class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
+        <!-- 链接网格 (官网图标版) -->
+        <div id="shortcuts-container" class="w-full grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4 sm:gap-6 justify-items-center animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
             <!-- 内容由 JS 动态生成 -->
         </div>
     </main>
@@ -110,20 +132,24 @@
     <div id="modal-add-link" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
             <div class="p-6">
-                <h3 class="text-xl font-bold mb-4 dark:text-white">添加链接</h3>
+                <h3 class="text-xl font-bold mb-4 dark:text-white">添加快捷方式</h3>
                 <form id="form-add-link" class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium mb-1 dark:text-slate-300">名称</label>
-                        <input id="input-link-name" type="text" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input id="input-link-name" type="text" placeholder="例如: Bilibili" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1 dark:text-slate-300">网址</label>
-                        <input id="input-link-url" type="text" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input id="input-link-url" type="text" placeholder="例如: bilibili.com" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-2 dark:text-slate-300">图标</label>
-                        <div id="icon-selector" class="flex gap-2 flex-wrap"></div>
+                        <label class="block text-sm font-medium mb-1 dark:text-slate-300">分类 (用于数据整理)</label>
+                        <select id="input-link-category" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                            <!-- JS 填充 -->
+                        </select>
                     </div>
+                    <!-- 移除了图标选择器，因为现在是自动获取 -->
+                    
                     <div class="flex gap-3 mt-6 pt-2">
                         <button type="button" id="btn-cancel-add" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300">取消</button>
                         <button type="submit" class="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">添加</button>
@@ -133,11 +159,10 @@
         </div>
     </div>
 
-    <!-- 弹窗：财务概览 & 更新 -->
+    <!-- 弹窗：财务概览 -->
     <div id="modal-finance" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
             <div class="p-6">
-                <!-- 头部 -->
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-xl font-bold dark:text-white flex items-center gap-2">
                         <i data-lucide="wallet" class="w-5 h-5 text-green-500"></i>
@@ -145,8 +170,6 @@
                     </h3>
                     <button onclick="closeFinanceModal()" class="text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
-
-                <!-- 数据展示区 (点击后才看得到) -->
                 <div class="grid grid-cols-2 gap-4 mb-6">
                     <div class="p-4 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-center border border-gray-100 dark:border-slate-600">
                         <div class="text-xs text-gray-500 dark:text-slate-400 mb-1 uppercase tracking-wider">本月支出</div>
@@ -157,8 +180,6 @@
                         <div class="text-lg font-bold text-green-600 dark:text-green-400" id="modal-finance-balance">¥0.00</div>
                     </div>
                 </div>
-
-                <!-- 更新表单 -->
                 <div class="border-t border-gray-100 dark:border-slate-700 pt-5">
                     <p class="text-xs text-gray-400 dark:text-slate-500 mb-3 ml-1">更新余额 (系统自动计算差额为支出)</p>
                     <form id="form-finance" class="flex gap-2">
@@ -174,48 +195,60 @@
         // --- 1. 配置与状态 ---
         const DEFAULT_CATEGORIES = [
             {
-                id: 'ai', title: 'AI 助手', iconName: 'brain', color: 'text-purple-500',
+                id: 'ai', title: 'AI 助手', color: 'text-purple-500',
                 links: [
-                    { name: 'ChatGPT', url: 'https://chat.openai.com/', iconName: 'brain' },
-                    { name: 'Claude', url: 'https://claude.ai/', iconName: 'cpu' },
-                    { name: 'Gemini', url: 'https://gemini.google.com/', iconName: 'sparkles' },
+                    { name: 'ChatGPT', url: 'https://chat.openai.com/' },
+                    { name: 'Claude', url: 'https://claude.ai/' },
+                    { name: 'Gemini', url: 'https://gemini.google.com/' },
                 ]
             },
             {
-                id: 'research', title: '学术 & 科研', iconName: 'graduation-cap', color: 'text-blue-500',
+                id: 'research', title: '学术 & 科研', color: 'text-blue-500',
                 links: [
-                    { name: 'Google Scholar', url: 'https://scholar.google.com/', iconName: 'book-open' },
-                    { name: 'ArXiv', url: 'https://arxiv.org/', iconName: 'book-open' },
-                    { name: 'Papers w/ Code', url: 'https://paperswithcode.com/', iconName: 'code-2' },
+                    { name: 'Google Scholar', url: 'https://scholar.google.com/' },
+                    { name: 'ArXiv', url: 'https://arxiv.org/' },
+                    { name: 'Papers w/ Code', url: 'https://paperswithcode.com/' },
                 ]
             },
             {
-                id: 'dev', title: '开发社区', iconName: 'terminal', color: 'text-emerald-500',
+                id: 'dev', title: '开发社区', color: 'text-emerald-500',
                 links: [
-                    { name: 'GitHub', url: 'https://github.com/', iconName: 'github' },
-                    { name: 'Stack Overflow', url: 'https://stackoverflow.com/', iconName: 'code-2' },
-                    { name: 'V2EX', url: 'https://www.v2ex.com/', iconName: 'globe' },
+                    { name: 'GitHub', url: 'https://github.com/' },
+                    { name: 'Stack Overflow', url: 'https://stackoverflow.com/' },
+                    { name: 'V2EX', url: 'https://www.v2ex.com/' },
                 ]
             },
             {
-                id: 'ent', title: '摸鱼时间', iconName: 'coffee', color: 'text-orange-500',
+                id: 'ent', title: '摸鱼时间', color: 'text-orange-500',
                 links: [
-                    { name: 'Bilibili', url: 'https://www.bilibili.com/', iconName: 'monitor-play' },
-                    { name: 'YouTube', url: 'https://www.youtube.com/', iconName: 'youtube' },
-                    { name: '抖音', url: 'https://www.douyin.com/', iconName: 'monitor-play' },
+                    { name: 'Bilibili', url: 'https://www.bilibili.com/' },
+                    { name: 'YouTube', url: 'https://www.youtube.com/' },
+                    { name: '抖音', url: 'https://www.douyin.com/' },
                 ]
             }
         ];
 
-        const AVAILABLE_ICONS = ['globe', 'code-2', 'book-open', 'monitor-play', 'sparkles', 'github', 'cpu', 'brain', 'coffee', 'wallet'];
+        // 每日问候语库
+        const DAILY_GREETINGS = [
+            "保持渴望，保持愚蠢。", 
+            "代码如诗，逻辑为魂。", 
+            "今天的努力是明天的基石。", 
+            "不仅要写代码，更要改变世界。",
+            "休息是为了走更远的路。",
+            "Keep it simple, stupid.",
+            "Stay Focus, Stay Efficient.",
+            "每一个 Bug 都是学习的机会。",
+            "喝杯咖啡，放松一下。",
+            "灵感总在不经意间降临。",
+            "做难事必有所得。",
+            "Hello World, Hello Future."
+        ];
 
         let state = {
             categories: JSON.parse(localStorage.getItem('myStartPageData')) || DEFAULT_CATEGORIES,
             isEditing: false,
-            searchEngine: 'google',
+            searchEngine: 'bing', // 默认 Bing
             isDarkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
-            activeAddCategoryId: null,
-            selectedIconForAdd: 'globe',
             financeLogs: JSON.parse(localStorage.getItem('myFinanceLogs')) || []
         };
 
@@ -227,7 +260,7 @@
             updateClock();
             setInterval(updateClock, 1000);
             
-            renderCategories();
+            renderShortcuts();
             updateEngineUI();
             lucide.createIcons();
             
@@ -247,15 +280,9 @@
             document.getElementById('clock-time').innerText = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
             document.getElementById('date-display').innerText = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
             
-            const hour = now.getHours();
-            let greet = '';
-            if (hour < 5) greet = '注意休息';
-            else if (hour < 11) greet = '早安，开心的一天又开始了';
-            else if (hour < 13) greet = '午饭时间';
-            else if (hour < 18) greet = '下午好，继续加油吧';
-            else if (hour < 23) greet = '晚上好，享受自由时间';
-            else greet = '夜深了，早点睡';
-            document.getElementById('greeting-text').innerText = greet;
+            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const greetingIndex = dayOfYear % DAILY_GREETINGS.length;
+            document.getElementById('greeting-text').innerText = DAILY_GREETINGS[greetingIndex];
         }
 
         function toggleTheme() {
@@ -282,9 +309,6 @@
                 document.getElementById('icon-settings').classList.add('hidden');
                 document.getElementById('icon-check').classList.remove('hidden');
                 document.getElementById('text-edit-done').classList.remove('hidden');
-                
-                main.classList.add('scale-95');
-                searchContainer.classList.add('opacity-40', 'pointer-events-none', 'grayscale');
                 greeting.classList.add('opacity-50', 'blur-[1px]');
                 btnReset.classList.remove('hidden');
             } else {
@@ -292,13 +316,10 @@
                 document.getElementById('icon-settings').classList.remove('hidden');
                 document.getElementById('icon-check').classList.add('hidden');
                 document.getElementById('text-edit-done').classList.add('hidden');
-                
-                main.classList.remove('scale-95');
-                searchContainer.classList.remove('opacity-40', 'pointer-events-none', 'grayscale');
                 greeting.classList.remove('opacity-50', 'blur-[1px]');
                 btnReset.classList.add('hidden');
             }
-            renderCategories();
+            renderShortcuts();
         }
 
         function updateEngineUI() {
@@ -317,24 +338,15 @@
             input.placeholder = `Search ${state.searchEngine === 'google' ? 'Google' : 'Bing'}...`;
         }
 
-        // --- 财务逻辑 (整合到弹窗中) ---
-
+        // --- 财务逻辑 ---
         window.openFinanceModal = () => {
             document.getElementById('modal-finance').classList.remove('hidden');
-            
-            // 1. 获取最新余额
-            const lastLog = state.financeLogs.length > 0 
-                ? state.financeLogs[state.financeLogs.length - 1] 
-                : { balance: 0 };
-            
-            // 更新弹窗上的显示数据
+            const lastLog = state.financeLogs.length > 0 ? state.financeLogs[state.financeLogs.length - 1] : { balance: 0 };
             document.getElementById('modal-finance-balance').innerText = '¥ ' + parseFloat(lastLog.balance).toLocaleString('zh-CN', {minimumFractionDigits: 2});
 
-            // 2. 计算本月支出
             const now = new Date();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
-
             const thisMonthLogs = state.financeLogs.filter(log => {
                 const d = new Date(log.date);
                 return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
@@ -344,109 +356,79 @@
             for (let i = 1; i < thisMonthLogs.length; i++) {
                 const prev = thisMonthLogs[i-1].balance;
                 const curr = thisMonthLogs[i].balance;
-                if (curr < prev) {
-                    totalSpent += (prev - curr);
-                }
+                if (curr < prev) totalSpent += (prev - curr);
             }
             document.getElementById('modal-finance-spent').innerText = '¥ ' + totalSpent.toLocaleString('zh-CN', {minimumFractionDigits: 2});
-
-            // 预填输入框
             const input = document.getElementById('input-balance');
             input.value = lastLog.balance || '';
             input.focus();
         };
 
-        window.closeFinanceModal = () => {
-            document.getElementById('modal-finance').classList.add('hidden');
-        };
+        window.closeFinanceModal = () => { document.getElementById('modal-finance').classList.add('hidden'); };
 
         document.getElementById('form-finance').addEventListener('submit', (e) => {
             e.preventDefault();
             const balanceVal = parseFloat(document.getElementById('input-balance').value);
             if (isNaN(balanceVal)) return;
-
-            // 记录日志
-            const newLog = {
-                date: new Date().toISOString(),
-                balance: balanceVal
-            };
-            
-            state.financeLogs.push(newLog);
+            state.financeLogs.push({ date: new Date().toISOString(), balance: balanceVal });
             state.financeLogs.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
             saveFinance();
-            
-            // 重新刷新弹窗数据（给用户即时反馈）
             openFinanceModal();
-            
-            // 可选：更新后自动关闭，或者给个提示。这里选择更新数据但不关闭，方便查看结果。
-            // closeFinanceModal(); 
         });
 
+        // --- 渲染逻辑 (自动获取图标) ---
 
-        // --- UI 渲染 ---
+        function getFaviconUrl(url) {
+            // Google Favicon Service
+            return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`;
+        }
 
-        function renderCategories() {
-            const grid = document.getElementById('categories-grid');
-            grid.innerHTML = '';
+        function renderShortcuts() {
+            const container = document.getElementById('shortcuts-container');
+            container.innerHTML = '';
 
             state.categories.forEach(cat => {
-                const card = document.createElement('div');
-                card.className = `p-5 rounded-2xl border transition-all duration-300 h-full relative backdrop-blur-sm ${
-                    state.isDarkMode 
-                    ? 'bg-slate-800/50 border-slate-700/50' 
-                    : 'bg-white/60 border-gray-100'
-                } ${!state.isEditing ? 'hover:shadow-lg hover:-translate-y-1' : ''}`;
+                cat.links.forEach((link, linkIndex) => {
+                    const item = document.createElement('div');
+                    item.className = 'relative group';
+                    
+                    const faviconSrc = getFaviconUrl(link.url);
 
-                let linksHtml = '';
-                cat.links.forEach((link, idx) => {
-                    linksHtml += `
-                        <div class="relative group/item">
-                            <a href="${state.isEditing ? 'javascript:void(0)' : link.url}" 
-                               target="${state.isEditing ? '' : '_blank'}"
-                               class="flex items-center gap-3 p-2 rounded-lg transition-all duration-200 group/link ${
-                                   state.isEditing 
-                                   ? 'cursor-default opacity-80 border border-dashed border-gray-300 dark:border-slate-600' 
-                                   : (state.isDarkMode ? 'text-slate-400 hover:text-white hover:bg-slate-700/50' : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50')
-                               }">
-                                <div class="w-6 h-6 flex items-center justify-center rounded-md transition-colors text-xs shrink-0 ${state.isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-gray-100 text-gray-500'}">
-                                    <i data-lucide="${link.iconName || 'globe'}" class="w-4 h-4"></i>
-                                </div>
-                                <span class="text-sm font-medium truncate">${link.name}</span>
-                            </a>
-                            ${state.isEditing ? `
-                                <button onclick="deleteLink('${cat.id}', ${idx})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10 scale-0 group-hover/item:scale-100">
-                                    <i data-lucide="x" class="w-3 h-3"></i>
-                                </button>
-                            ` : ''}
-                        </div>
+                    const contentHtml = `
+                        <a href="${state.isEditing ? 'javascript:void(0)' : link.url}" 
+                           target="${state.isEditing ? '' : '_blank'}"
+                           class="flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 group-hover:bg-white/50 dark:group-hover:bg-white/10 ${state.isEditing ? 'cursor-default opacity-80' : ''}">
+                            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm dark:bg-slate-800 overflow-hidden p-2.5">
+                                <img src="${faviconSrc}" alt="${link.name}" class="w-full h-full object-contain favicon-img" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=128'">
+                            </div>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 w-24 text-center truncate">${link.name}</span>
+                        </a>
                     `;
-                });
-
-                if (state.isEditing) {
-                    linksHtml += `
-                        <button onclick="openAddModal('${cat.id}')" class="w-full flex items-center justify-center gap-2 p-2 rounded-lg border border-dashed transition-all duration-200 mt-2 ${
-                            state.isDarkMode 
-                            ? 'border-slate-600 text-slate-500 hover:text-slate-300 hover:border-slate-400' 
-                            : 'border-gray-300 text-gray-400 hover:text-blue-500 hover:border-blue-400'
-                        }">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                            <span class="text-xs font-medium">Add Link</span>
+                    
+                    const deleteBtnHtml = state.isEditing ? `
+                        <button onclick="deleteLink('${cat.id}', ${linkIndex})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-all z-10 scale-0 group-hover:scale-100">
+                            <i data-lucide="x" class="w-3 h-3"></i>
                         </button>
-                    `;
-                }
+                    ` : '';
 
-                card.innerHTML = `
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="${cat.color} opacity-80">
-                            <i data-lucide="${cat.iconName}" class="w-5 h-5"></i>
-                        </div>
-                        <h2 class="font-semibold text-sm tracking-wide uppercase ${state.isDarkMode ? 'text-slate-300' : 'text-gray-500'}">${cat.title}</h2>
-                    </div>
-                    <div class="space-y-2">${linksHtml}</div>
-                `;
-                grid.appendChild(card);
+                    item.innerHTML = contentHtml + deleteBtnHtml;
+                    container.appendChild(item);
+                });
             });
+
+            if (state.isEditing) {
+                const addBtn = document.createElement('button');
+                addBtn.onclick = () => openAddModal();
+                addBtn.className = "flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:bg-white/50 dark:hover:bg-white/10 group";
+                addBtn.innerHTML = `
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 group-hover:text-blue-500">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </div>
+                    <span class="text-sm font-medium text-gray-400 dark:text-gray-500 w-24 text-center">添加</span>
+                `;
+                container.appendChild(addBtn);
+            }
+
             lucide.createIcons();
         }
 
@@ -456,10 +438,9 @@
             e.preventDefault();
             const term = document.getElementById('search-input').value.trim();
             if (!term) return;
-            const url = state.searchEngine === 'google' 
+            window.location.href = state.searchEngine === 'google' 
                 ? `https://www.google.com/search?q=${encodeURIComponent(term)}`
                 : `https://www.bing.com/search?q=${encodeURIComponent(term)}`;
-            window.location.href = url;
         });
 
         document.querySelectorAll('.engine-btn').forEach(btn => {
@@ -480,55 +461,41 @@
             }
         });
 
-        // 弹窗逻辑
-        window.openAddModal = (catId) => {
-            state.activeAddCategoryId = catId;
+        window.openAddModal = () => {
             document.getElementById('modal-add-link').classList.remove('hidden');
+            const catSelect = document.getElementById('input-link-category');
+            catSelect.innerHTML = '';
+            state.categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.text = cat.title;
+                option.className = "text-gray-800 dark:text-gray-200 dark:bg-slate-800";
+                catSelect.appendChild(option);
+            });
             document.getElementById('input-link-name').focus();
-            renderIconSelector();
         }
 
         document.getElementById('btn-cancel-add').addEventListener('click', () => {
             document.getElementById('modal-add-link').classList.add('hidden');
             document.getElementById('form-add-link').reset();
-            state.selectedIconForAdd = 'globe';
         });
-
-        function renderIconSelector() {
-            const container = document.getElementById('icon-selector');
-            container.innerHTML = '';
-            AVAILABLE_ICONS.forEach(iconName => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                const isSelected = state.selectedIconForAdd === iconName;
-                btn.className = `p-2 rounded-lg border transition-all ${
-                    isSelected 
-                    ? 'bg-blue-100 border-blue-500 text-blue-600 dark:bg-blue-900/30 dark:border-blue-400 dark:text-blue-300' 
-                    : 'border-transparent hover:bg-gray-100 dark:hover:bg-slate-700 dark:text-slate-400'
-                }`;
-                btn.innerHTML = `<i data-lucide="${iconName}" class="w-5 h-5"></i>`;
-                btn.onclick = () => {
-                    state.selectedIconForAdd = iconName;
-                    renderIconSelector();
-                };
-                container.appendChild(btn);
-            });
-            lucide.createIcons();
-        }
 
         document.getElementById('form-add-link').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('input-link-name').value;
             let url = document.getElementById('input-link-url').value;
-            if (name && url) {
+            const catId = document.getElementById('input-link-category').value;
+
+            if (name && url && catId) {
                 if (!url.startsWith('http')) url = 'https://' + url;
-                const newLink = { name, url, iconName: state.selectedIconForAdd };
+                const newLink = { name, url };
+                
                 state.categories = state.categories.map(cat => {
-                    if (cat.id === state.activeAddCategoryId) return { ...cat, links: [...cat.links, newLink] };
+                    if (cat.id === catId) return { ...cat, links: [...cat.links, newLink] };
                     return cat;
                 });
                 saveState();
-                renderCategories();
+                renderShortcuts();
                 document.getElementById('modal-add-link').classList.add('hidden');
                 document.getElementById('form-add-link').reset();
             }
@@ -545,15 +512,11 @@
                     return cat;
                 });
                 saveState();
-                renderCategories();
+                renderShortcuts();
             }
         };
 
         init();
     </script>
 </body>
-
 </html>
-
-
-
