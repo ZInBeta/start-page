@@ -53,6 +53,12 @@
         input[type="search"]::-webkit-search-results-button,
         input[type="search"]::-webkit-search-results-decoration { display: none; }
         
+        /* 拖拽时的样式 */
+        .dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+        
         /* 图标加载失败时的样式 */
         .favicon-img {
             object-fit: contain;
@@ -66,7 +72,7 @@
         <div id="date-display" class="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity cursor-default hidden md:block"></div>
         
         <!-- 编辑模式开关 -->
-        <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 flex items-center gap-2 bg-white hover:bg-gray-100 text-slate-600 shadow-sm dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400" title="自定义主页">
+        <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 flex items-center gap-2 bg-white hover:bg-gray-100 text-slate-600 shadow-sm dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400" title="自定义主页 (拖拽排序)">
             <i data-lucide="settings" class="w-[18px] h-[18px]" id="icon-settings"></i>
             <i data-lucide="check" class="w-[18px] h-[18px] hidden" id="icon-check"></i>
             <span id="text-edit-done" class="text-xs font-bold pr-1 hidden">完成</span>
@@ -102,14 +108,9 @@
                 <input id="search-input" type="text" placeholder="Search Bing..." class="w-full pl-14 pr-36 py-4 rounded-full text-lg shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-300 outline-none border bg-white border-transparent focus:border-blue-100 text-gray-800 placeholder-gray-300 dark:bg-slate-800 dark:border-slate-700 dark:focus:border-slate-600 dark:text-white dark:placeholder-slate-500">
                 <div class="absolute inset-y-0 right-2 flex items-center">
                     <div class="flex items-center p-1 rounded-full bg-gray-100 dark:bg-slate-700/50">
-                        <!-- 调整顺序：Bing 在前，Google 在后 -->
                         <button type="button" data-engine="bing" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-white">B</button>
                         <button type="button" data-engine="google" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200">G</button>
-                        
-                        <!-- 分割线 -->
                         <div class="w-px h-4 mx-2 bg-gray-300 dark:bg-slate-600"></div>
-                        
-                        <!-- 钱包按钮 -->
                         <button type="button" onclick="openFinanceModal()" class="p-1.5 rounded-full text-gray-400 hover:text-green-600 dark:text-slate-400 dark:hover:text-green-400 transition-colors" title="我的钱包">
                             <i data-lucide="wallet" class="w-4 h-4"></i>
                         </button>
@@ -118,7 +119,7 @@
             </form>
         </div>
 
-        <!-- 链接网格 (官网图标版) -->
+        <!-- 链接网格 (支持拖拽) -->
         <div id="shortcuts-container" class="w-full grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4 sm:gap-6 justify-items-center animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
             <!-- 内容由 JS 动态生成 -->
         </div>
@@ -142,14 +143,6 @@
                         <label class="block text-sm font-medium mb-1 dark:text-slate-300">网址</label>
                         <input id="input-link-url" type="text" placeholder="例如: bilibili.com" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1 dark:text-slate-300">分类 (用于数据整理)</label>
-                        <select id="input-link-category" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                            <!-- JS 填充 -->
-                        </select>
-                    </div>
-                    <!-- 移除了图标选择器，因为现在是自动获取 -->
-                    
                     <div class="flex gap-3 mt-6 pt-2">
                         <button type="button" id="btn-cancel-add" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300">取消</button>
                         <button type="submit" class="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">添加</button>
@@ -193,39 +186,19 @@
 
     <script>
         // --- 1. 配置与状态 ---
-        const DEFAULT_CATEGORIES = [
-            {
-                id: 'ai', title: 'AI 助手', color: 'text-purple-500',
-                links: [
-                    { name: 'ChatGPT', url: 'https://chat.openai.com/' },
-                    { name: 'Claude', url: 'https://claude.ai/' },
-                    { name: 'Gemini', url: 'https://gemini.google.com/' },
-                ]
-            },
-            {
-                id: 'research', title: '学术 & 科研', color: 'text-blue-500',
-                links: [
-                    { name: 'Google Scholar', url: 'https://scholar.google.com/' },
-                    { name: 'ArXiv', url: 'https://arxiv.org/' },
-                    { name: 'Papers w/ Code', url: 'https://paperswithcode.com/' },
-                ]
-            },
-            {
-                id: 'dev', title: '开发社区', color: 'text-emerald-500',
-                links: [
-                    { name: 'GitHub', url: 'https://github.com/' },
-                    { name: 'Stack Overflow', url: 'https://stackoverflow.com/' },
-                    { name: 'V2EX', url: 'https://www.v2ex.com/' },
-                ]
-            },
-            {
-                id: 'ent', title: '摸鱼时间', color: 'text-orange-500',
-                links: [
-                    { name: 'Bilibili', url: 'https://www.bilibili.com/' },
-                    { name: 'YouTube', url: 'https://www.youtube.com/' },
-                    { name: '抖音', url: 'https://www.douyin.com/' },
-                ]
-            }
+        
+        // 旧的默认分类数据（用于初始化迁移）
+        const DEFAULT_SHORTCUTS = [
+            { name: 'Bing', url: 'https://www.bing.com/' },
+            { name: 'Google', url: 'https://www.google.com/' },
+            { name: 'ChatGPT', url: 'https://chat.openai.com/' },
+            { name: 'Claude', url: 'https://claude.ai/' },
+            { name: 'Gemini', url: 'https://gemini.google.com/' },
+            { name: 'Scholar', url: 'https://scholar.google.com/' },
+            { name: 'ArXiv', url: 'https://arxiv.org/' },
+            { name: 'GitHub', url: 'https://github.com/' },
+            { name: 'Bilibili', url: 'https://www.bilibili.com/' },
+            { name: 'YouTube', url: 'https://www.youtube.com/' },
         ];
 
         // 每日问候语库
@@ -245,7 +218,7 @@
         ];
 
         let state = {
-            categories: JSON.parse(localStorage.getItem('myStartPageData')) || DEFAULT_CATEGORIES,
+            shortcuts: [], // 扁平化的快捷方式列表
             isEditing: false,
             searchEngine: 'bing', // 默认 Bing
             isDarkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
@@ -257,6 +230,29 @@
         function init() {
             if (state.isDarkMode) document.documentElement.classList.add('dark');
             
+            // 数据迁移逻辑：如果存在旧的分类数据，将其扁平化
+            const oldData = localStorage.getItem('myStartPageData');
+            const savedShortcuts = localStorage.getItem('myShortcuts');
+
+            if (savedShortcuts) {
+                state.shortcuts = JSON.parse(savedShortcuts);
+            } else if (oldData) {
+                // 迁移旧数据
+                try {
+                    const categories = JSON.parse(oldData);
+                    let flattened = [];
+                    categories.forEach(cat => {
+                        if (cat.links) flattened = flattened.concat(cat.links);
+                    });
+                    state.shortcuts = flattened;
+                    saveState(); // 保存新格式
+                } catch(e) {
+                    state.shortcuts = DEFAULT_SHORTCUTS;
+                }
+            } else {
+                state.shortcuts = DEFAULT_SHORTCUTS;
+            }
+
             updateClock();
             setInterval(updateClock, 1000);
             
@@ -268,7 +264,7 @@
         }
 
         function saveState() {
-            localStorage.setItem('myStartPageData', JSON.stringify(state.categories));
+            localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
         }
         
         function saveFinance() {
@@ -376,10 +372,9 @@
             openFinanceModal();
         });
 
-        // --- 渲染逻辑 (自动获取图标) ---
+        // --- 拖拽与渲染 ---
 
         function getFaviconUrl(url) {
-            // Google Favicon Service
             return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`;
         }
 
@@ -387,33 +382,41 @@
             const container = document.getElementById('shortcuts-container');
             container.innerHTML = '';
 
-            state.categories.forEach(cat => {
-                cat.links.forEach((link, linkIndex) => {
-                    const item = document.createElement('div');
-                    item.className = 'relative group';
-                    
-                    const faviconSrc = getFaviconUrl(link.url);
+            state.shortcuts.forEach((link, index) => {
+                const item = document.createElement('div');
+                item.className = `relative group ${state.isEditing ? 'cursor-move' : ''}`;
+                
+                // 拖拽属性
+                if (state.isEditing) {
+                    item.setAttribute('draggable', 'true');
+                    item.addEventListener('dragstart', (e) => handleDragStart(e, index));
+                    item.addEventListener('dragover', handleDragOver);
+                    item.addEventListener('drop', (e) => handleDrop(e, index));
+                    item.addEventListener('dragenter', handleDragEnter);
+                    item.addEventListener('dragleave', handleDragLeave);
+                }
 
-                    const contentHtml = `
-                        <a href="${state.isEditing ? 'javascript:void(0)' : link.url}" 
-                           target="${state.isEditing ? '' : '_blank'}"
-                           class="flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 group-hover:bg-white/50 dark:group-hover:bg-white/10 ${state.isEditing ? 'cursor-default opacity-80' : ''}">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm dark:bg-slate-800 overflow-hidden p-2.5">
-                                <img src="${faviconSrc}" alt="${link.name}" class="w-full h-full object-contain favicon-img" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=128'">
-                            </div>
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 w-24 text-center truncate">${link.name}</span>
-                        </a>
-                    `;
-                    
-                    const deleteBtnHtml = state.isEditing ? `
-                        <button onclick="deleteLink('${cat.id}', ${linkIndex})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-all z-10 scale-0 group-hover:scale-100">
-                            <i data-lucide="x" class="w-3 h-3"></i>
-                        </button>
-                    ` : '';
+                const faviconSrc = getFaviconUrl(link.url);
 
-                    item.innerHTML = contentHtml + deleteBtnHtml;
-                    container.appendChild(item);
-                });
+                const contentHtml = `
+                    <a href="${state.isEditing ? 'javascript:void(0)' : link.url}" 
+                       target="${state.isEditing ? '' : '_blank'}"
+                       class="flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 group-hover:bg-white/50 dark:group-hover:bg-white/10 ${state.isEditing ? 'pointer-events-none' : ''}">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm dark:bg-slate-800 overflow-hidden p-2.5 transition-transform group-hover:scale-110">
+                            <img src="${faviconSrc}" alt="${link.name}" class="w-full h-full object-contain favicon-img" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=128'">
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 w-24 text-center truncate">${link.name}</span>
+                    </a>
+                `;
+                
+                const deleteBtnHtml = state.isEditing ? `
+                    <button onclick="deleteLink(${index})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-all z-10 scale-0 group-hover:scale-100">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                ` : '';
+
+                item.innerHTML = contentHtml + deleteBtnHtml;
+                container.appendChild(item);
             });
 
             if (state.isEditing) {
@@ -430,6 +433,47 @@
             }
 
             lucide.createIcons();
+        }
+
+        // --- 拖拽事件处理 ---
+        let dragSrcIndex = null;
+
+        function handleDragStart(e, index) {
+            dragSrcIndex = index;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', index);
+            e.target.classList.add('dragging');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('scale-105', 'bg-gray-100', 'dark:bg-slate-700', 'rounded-xl');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('scale-105', 'bg-gray-100', 'dark:bg-slate-700', 'rounded-xl');
+        }
+
+        function handleDrop(e, targetIndex) {
+            e.stopPropagation();
+            // 恢复样式
+            const cols = document.querySelectorAll('#shortcuts-container > div');
+            cols.forEach(col => col.classList.remove('dragging', 'scale-105', 'bg-gray-100', 'dark:bg-slate-700', 'rounded-xl'));
+
+            if (dragSrcIndex !== targetIndex) {
+                // 移动数组元素
+                const draggedItem = state.shortcuts[dragSrcIndex];
+                state.shortcuts.splice(dragSrcIndex, 1);
+                state.shortcuts.splice(targetIndex, 0, draggedItem);
+                saveState();
+                renderShortcuts();
+            }
+            return false;
         }
 
         // --- 事件监听 ---
@@ -455,7 +499,7 @@
         document.getElementById('btn-edit').addEventListener('click', toggleEditMode);
         document.getElementById('btn-reset').addEventListener('click', () => {
             if (confirm('确定要恢复默认设置吗？')) {
-                state.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+                state.shortcuts = DEFAULT_SHORTCUTS;
                 saveState();
                 toggleEditMode();
             }
@@ -463,15 +507,6 @@
 
         window.openAddModal = () => {
             document.getElementById('modal-add-link').classList.remove('hidden');
-            const catSelect = document.getElementById('input-link-category');
-            catSelect.innerHTML = '';
-            state.categories.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.id;
-                option.text = cat.title;
-                option.className = "text-gray-800 dark:text-gray-200 dark:bg-slate-800";
-                catSelect.appendChild(option);
-            });
             document.getElementById('input-link-name').focus();
         }
 
@@ -484,16 +519,11 @@
             e.preventDefault();
             const name = document.getElementById('input-link-name').value;
             let url = document.getElementById('input-link-url').value;
-            const catId = document.getElementById('input-link-category').value;
 
-            if (name && url && catId) {
+            if (name && url) {
                 if (!url.startsWith('http')) url = 'https://' + url;
                 const newLink = { name, url };
-                
-                state.categories = state.categories.map(cat => {
-                    if (cat.id === catId) return { ...cat, links: [...cat.links, newLink] };
-                    return cat;
-                });
+                state.shortcuts.push(newLink);
                 saveState();
                 renderShortcuts();
                 document.getElementById('modal-add-link').classList.add('hidden');
@@ -501,16 +531,9 @@
             }
         });
 
-        window.deleteLink = (catId, index) => {
+        window.deleteLink = (index) => {
             if (confirm('确定删除?')) {
-                state.categories = state.categories.map(cat => {
-                    if (cat.id === catId) {
-                        const newLinks = [...cat.links];
-                        newLinks.splice(index, 1);
-                        return { ...cat, links: newLinks };
-                    }
-                    return cat;
-                });
+                state.shortcuts.splice(index, 1);
                 saveState();
                 renderShortcuts();
             }
