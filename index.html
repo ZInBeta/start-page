@@ -237,7 +237,12 @@
             { name: 'ChatGPT', url: 'https://chat.openai.com/' }, { name: 'GitHub', url: 'https://github.com/' },
             { name: 'Bilibili', url: 'https://www.bilibili.com/' },
         ];
-        const GREETINGS = ["保持渴望，保持愚蠢。", "代码如诗，逻辑为魂。", "做难事必有所得。", "Stay Focus, Stay Efficient.", "Hello World, Hello Future.", "计算机科学，是关于效率的艺术。"];
+        const GREETINGS = ["Do what you can, with what you have, where you are.",
+  "Progress, not perfection.",
+  "Small steps, big changes.",
+  "The harder you work, the luckier you get.",
+  "Challenges are what make life interesting and overcoming them is what makes life meaningful.",
+  "Believe you can and you're halfway there."];
 
         let state = {
             shortcuts: JSON.parse(localStorage.getItem('myShortcuts')) || DEFAULT_SHORTCUTS,
@@ -450,3 +455,4 @@
     </script>
 </body>
 </html>
+
