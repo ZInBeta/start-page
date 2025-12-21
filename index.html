@@ -9,11 +9,20 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- 
+        核心修改：使用 Google Fonts 的国内镜像源 (fonts.loli.net)
+        这样在国内也能正常加载 Outfit 字体，不会回退到系统字体
+    -->
+    <link rel="preconnect" href="https://fonts.loli.net">
+    <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
+    <link href="https://fonts.loli.net/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    // 确保 Outfit 排在第一位
                     fontFamily: { sans: ['Outfit', 'system-ui', '-apple-system', 'sans-serif'] },
                     animation: { 'fade-in-down': 'fadeInDown 0.3s ease-out forwards', 'fade-in-up': 'fadeInUp 0.6s ease-out forwards' },
                     keyframes: {
@@ -25,12 +34,10 @@
         }
     </script>
     
-    <!-- 关键修改：添加 type="text/tailwindcss" 以支持 @apply -->
     <style type="text/tailwindcss">
         body { font-family: 'Outfit', sans-serif; transition: background-image 0.5s ease, background-color 0.5s ease, color 0.3s ease; }
         .glass-panel { @apply backdrop-blur-md bg-white/60 border border-white/40 dark:bg-slate-800/60 dark:border-slate-700/50; }
         
-        /* 隐藏搜索框默认 UI */
         input[type="search"]::-webkit-search-decoration,
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-results-button,
@@ -39,7 +46,7 @@
         .dragging { opacity: 0.4; transform: scale(0.95); }
         .favicon-img { object-fit: contain; }
 
-        /* 主题定义 - 修复了背景切换无效的问题 */
+        /* 主题定义 */
         .theme-light { @apply bg-gray-50 text-gray-800; }
         .theme-dark { @apply bg-slate-900 text-slate-100; }
         .theme-blue { @apply bg-gradient-to-br from-blue-50 to-indigo-100 text-slate-800 dark:from-slate-900 dark:to-indigo-950 dark:text-slate-100; }
@@ -61,13 +68,12 @@
 <body id="app-body" class="min-h-screen font-sans overflow-x-hidden flex flex-col theme-light">
 
     <!-- 顶部导航 -->
-    <header class="w-full p-4 sm:p-6 flex flex-col z-20 relative">
-        <div class="flex items-center justify-between w-full max-w-6xl mx-auto">
+    <header class="w-full px-6 py-4 flex flex-col z-20 relative">
+        <div class="flex items-center justify-between w-full">
             <!-- 左侧：云同步状态 -->
             <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel cursor-pointer hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all select-none group shadow-sm">
                 <div class="relative flex items-center justify-center">
                     <i data-lucide="cloud" class="w-4 h-4 opacity-70 group-hover:text-blue-500 transition-colors"></i>
-                    <!-- 状态指示点 -->
                     <span id="cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gray-400 rounded-full border border-white dark:border-slate-800"></span>
                 </div>
                 <span id="cloud-text" class="text-xs font-bold opacity-80">未连接</span>
@@ -76,36 +82,31 @@
             <!-- 右侧：工具栏 -->
             <div class="flex items-center gap-3">
                 <div id="date-display" class="text-sm font-medium opacity-60 hidden md:block select-none"></div>
-                
-                <!-- 编辑按钮 -->
                 <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 dark:bg-slate-700/50 dark:hover:bg-slate-600 shadow-sm" title="设置 / 编辑布局">
                     <i data-lucide="settings-2" class="w-5 h-5 opacity-70"></i>
                 </button>
             </div>
         </div>
 
-        <!-- 编辑模式控制台 (优化版：居中、紧凑) -->
-        <div id="edit-panel" class="hidden w-full mt-4 animate-fade-in-down absolute top-16 left-0 px-4">
-            <div class="glass-panel rounded-2xl p-3 border shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 max-w-2xl mx-auto backdrop-blur-xl">
-                
-                <!-- 1. 主题选择 -->
+        <!-- 编辑模式控制台 -->
+        <div id="edit-panel" class="hidden w-full mt-4 animate-fade-in-down absolute top-14 left-0 px-4 z-30">
+            <div class="glass-panel rounded-2xl p-4 border shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto backdrop-blur-xl">
+                <!-- 风格选择 -->
                 <div class="flex items-center gap-3">
                     <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest shrink-0">风格</span>
                     <div class="flex gap-2">
-                        <button onclick="changeTheme('theme-light')" class="w-6 h-6 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="雅白"></button>
-                        <button onclick="changeTheme('theme-dark')" class="w-6 h-6 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="深邃"></button>
-                        <button onclick="changeTheme('theme-blue')" class="w-6 h-6 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="极光"></button>
-                        <button onclick="changeTheme('theme-green')" class="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="森系"></button>
-                        <button onclick="changeTheme('theme-purple')" class="w-6 h-6 rounded-full bg-gradient-to-br from-fuchsia-300 to-purple-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="梦幻"></button>
-                        <button onclick="changeTheme('theme-warm')" class="w-6 h-6 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="暖阳"></button>
+                        <button onclick="changeTheme('theme-light')" class="w-5 h-5 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="雅白"></button>
+                        <button onclick="changeTheme('theme-dark')" class="w-5 h-5 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="深邃"></button>
+                        <button onclick="changeTheme('theme-blue')" class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="极光"></button>
+                        <button onclick="changeTheme('theme-green')" class="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="森系"></button>
+                        <button onclick="changeTheme('theme-purple')" class="w-5 h-5 rounded-full bg-gradient-to-br from-fuchsia-300 to-purple-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="梦幻"></button>
+                        <button onclick="changeTheme('theme-warm')" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="暖阳"></button>
                     </div>
                 </div>
-
                 <div class="w-full h-px bg-gray-400/20 sm:w-px sm:h-6"></div>
-
-                <!-- 2. 数据操作 -->
+                <!-- 操作按钮 -->
                 <div class="flex items-center gap-3">
-                    <button onclick="resetData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300">重置数据</button>
+                    <button onclick="resetData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300">重置</button>
                     <button id="btn-done" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-1.5">
                         <i data-lucide="check" class="w-3.5 h-3.5"></i> 完成
                     </button>
@@ -144,7 +145,7 @@
             </form>
         </div>
 
-        <!-- 链接网格 (8列布局) -->
+        <!-- 链接网格 -->
         <div id="shortcuts-container" class="w-full grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-8 gap-x-4 gap-y-6 justify-items-center animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
             <!-- JS 生成 -->
         </div>
@@ -167,7 +168,7 @@
                     <label class="block text-xs font-bold uppercase text-gray-400 mb-1">网址</label>
                     <input id="input-link-url" type="text" placeholder="github.com" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-transparent focus:bg-white dark:focus:bg-slate-600 border focus:border-blue-500 outline-none transition-all dark:text-white" required>
                 </div>
-                <!-- 离线图标 -->
+                <!-- 离线图标上传 -->
                 <div>
                     <label class="block text-sm font-medium mb-1 dark:text-slate-300">自定义图标 (支持离线)</label>
                     <div class="flex items-center gap-3">
@@ -210,10 +211,8 @@
     <div id="modal-cloud-config" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up p-6">
             <h3 class="text-xl font-bold mb-2 dark:text-white">云端同步配置 (Firebase)</h3>
-            <p class="text-xs text-gray-500 mb-4">填写配置后，你的数据将跨设备自动同步。</p>
-            
+            <p class="text-xs text-gray-500 mb-4">填写配置后，你的链接和记账数据将跨设备自动同步。数据加密存储在 Google Cloud。</p>
             <div id="cloud-error-msg" class="hidden mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-xs border border-red-100 dark:bg-red-900/30 dark:border-red-900/50 dark:text-red-300"></div>
-
             <form id="form-cloud-config" class="space-y-3">
                 <div><label class="block text-xs font-bold text-gray-500 mb-1">API Key</label><input id="input-firebase-apikey" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" placeholder="AIzaSy..." required></div>
                 <div class="grid grid-cols-2 gap-3">
@@ -228,7 +227,6 @@
         </div>
     </div>
 
-    <!-- 逻辑脚本 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -273,15 +271,12 @@
                 const app = initializeApp(config);
                 const auth = getAuth(app);
                 state.db = getFirestore(app);
-                
                 await signInAnonymously(auth);
-                
                 const docRef = doc(state.db, "users", "my_sync_data_v1");
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         let needRender = false;
-                        
                         if(JSON.stringify(data.shortcuts) !== JSON.stringify(state.shortcuts)) {
                             state.shortcuts = data.shortcuts || [];
                             localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
@@ -296,7 +291,6 @@
                             localStorage.setItem('myTheme', state.theme);
                             applyTheme(state.theme);
                         }
-                        
                         if(needRender) renderShortcuts();
                         updateCloudStatus('synced');
                         document.getElementById('modal-cloud-config').classList.add('hidden');
@@ -309,7 +303,6 @@
                     showCloudError("同步中断：请检查网络代理。");
                     updateCloudStatus('error');
                 });
-
             } catch (e) {
                 console.error("Firebase Init Error", e);
                 showCloudError("连接失败：请开启 VPN 代理 googleapis.com，并确保 Firebase 中启用了【匿名登录】。");
