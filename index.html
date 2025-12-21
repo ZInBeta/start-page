@@ -4,540 +4,458 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新标签页</title>
-    <!-- 引入 Tailwind CSS -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 Lucide Icons -->
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- 引入 Google Fonts: Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
+                        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
                     },
                     animation: {
-                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'fade-in-down': 'fadeInDown 0.3s ease-out forwards',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
                     },
                     keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
+                        fadeInDown: { '0%': { opacity: '0', transform: 'translateY(-10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
                     }
                 }
             }
         }
     </script>
     <style>
-        body { font-family: 'Outfit', sans-serif; }
+        body { font-family: system-ui, -apple-system, sans-serif; transition: background 0.5s ease, color 0.3s ease; }
+        .glass-panel { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
         
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
-        
-        .glass-panel {
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        /* 隐藏搜索框默认的 X */
+        /* 隐藏搜索框默认 UI */
         input[type="search"]::-webkit-search-decoration,
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-results-button,
         input[type="search"]::-webkit-search-results-decoration { display: none; }
         
-        /* 拖拽时的样式 */
-        .dragging {
-            opacity: 0.5;
-            transform: scale(0.95);
-        }
+        /* 拖拽样式 */
+        .dragging { opacity: 0.4; transform: scale(0.9); }
+        .drag-over { transform: scale(1.05); transition: transform 0.2s; }
+
+        /* 主题类定义 */
+        .theme-light { @apply bg-gray-50 text-gray-800; }
+        .theme-dark { @apply bg-slate-900 text-slate-100; }
+        .theme-blue { @apply bg-gradient-to-br from-blue-50 to-indigo-100 text-slate-800; }
+        .theme-green { @apply bg-gradient-to-br from-emerald-50 to-teal-100 text-teal-900; }
+        .theme-purple { @apply bg-gradient-to-br from-fuchsia-50 to-purple-100 text-purple-900; }
+        .theme-warm { @apply bg-gradient-to-br from-orange-50 to-amber-100 text-orange-900; }
         
-        /* 图标加载失败时的样式 */
-        .favicon-img {
-            object-fit: contain;
-        }
+        /* 在特定主题下的组件微调 */
+        .theme-dark .glass-panel { @apply bg-slate-800/50 border-slate-700; }
+        .theme-dark input { @apply bg-slate-800 border-slate-700 text-white placeholder-slate-500; }
+        .theme-dark .shortcut-item:hover { @apply bg-white/10; }
+        .theme-dark .shortcut-icon-bg { @apply bg-slate-800 text-slate-300; }
+        
+        /* 默认(亮色)下组件微调 */
+        .theme-light .glass-panel, .theme-blue .glass-panel, .theme-green .glass-panel { @apply bg-white/60 border-white/40; }
     </style>
 </head>
-<body class="min-h-screen transition-colors duration-500 ease-in-out font-sans selection:bg-blue-200 selection:text-blue-900 overflow-x-hidden flex flex-col bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-slate-100">
+<body id="app-body" class="min-h-screen font-sans overflow-x-hidden flex flex-col theme-light">
 
     <!-- 顶部导航 -->
-    <header class="absolute top-0 right-0 p-6 flex items-center gap-4 z-20">
-        <div id="date-display" class="text-sm font-medium opacity-60 hover:opacity-100 transition-opacity cursor-default hidden md:block"></div>
-        
-        <!-- 编辑模式开关 -->
-        <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 flex items-center gap-2 bg-white hover:bg-gray-100 text-slate-600 shadow-sm dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400" title="自定义主页 (拖拽排序)">
-            <i data-lucide="settings" class="w-[18px] h-[18px]" id="icon-settings"></i>
-            <i data-lucide="check" class="w-[18px] h-[18px] hidden" id="icon-check"></i>
-            <span id="text-edit-done" class="text-xs font-bold pr-1 hidden">完成</span>
-        </button>
+    <header class="w-full p-4 sm:p-6 flex flex-col z-20 relative">
+        <div class="flex items-center justify-between w-full">
+            <!-- 左侧：云同步状态 (替换了倒计时) -->
+            <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel border shadow-sm cursor-pointer hover:shadow-md transition-all select-none group bg-white/50 hover:bg-white/80 dark:bg-slate-800/50 dark:hover:bg-slate-700/60">
+                <div class="relative flex items-center justify-center">
+                    <i data-lucide="cloud" class="w-4 h-4 opacity-70 group-hover:text-blue-500 transition-colors"></i>
+                    <!-- 状态指示点 -->
+                    <span id="cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gray-400 rounded-full border border-white dark:border-slate-800"></span>
+                </div>
+                <span id="cloud-text" class="text-xs font-bold opacity-80">未连接</span>
+            </div>
 
-        <!-- 恢复默认按钮 -->
-        <button id="btn-reset" class="hidden p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-all text-xs font-medium" title="恢复默认设置">
-            <i data-lucide="rotate-ccw" class="w-[18px] h-[18px]"></i>
-        </button>
+            <!-- 右侧：工具栏 -->
+            <div class="flex items-center gap-3">
+                <div id="date-display" class="text-sm font-medium opacity-60 hidden md:block select-none"></div>
+                
+                <!-- 编辑按钮 -->
+                <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 shadow-sm" title="设置 / 编辑布局">
+                    <i data-lucide="settings-2" class="w-5 h-5 opacity-70"></i>
+                </button>
+            </div>
+        </div>
 
-        <!-- 主题切换 -->
-        <button id="btn-theme" class="p-2 rounded-full transition-all duration-300 bg-white hover:bg-gray-100 text-slate-600 shadow-sm dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-yellow-400" title="切换主题">
-            <i data-lucide="moon" class="w-[18px] h-[18px] block dark:hidden"></i>
-            <i data-lucide="sun" class="w-[18px] h-[18px] hidden dark:block"></i>
-        </button>
+        <!-- 编辑模式控制台 -->
+        <div id="edit-panel" class="hidden w-full mt-4 animate-fade-in-down">
+            <div class="glass-panel rounded-2xl p-4 border shadow-lg flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- 1. 主题选择 (融合了夜间模式) -->
+                <div class="flex flex-col gap-2">
+                    <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest">主题风格</span>
+                    <div class="flex gap-3">
+                        <button onclick="changeTheme('theme-light')" class="w-6 h-6 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all" title="雅白 (日间)"></button>
+                        <button onclick="changeTheme('theme-dark')" class="w-6 h-6 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all" title="深邃 (夜间)"></button>
+                        <button onclick="changeTheme('theme-blue')" class="w-6 h-6 rounded-full bg-blue-100 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all" title="极光"></button>
+                        <button onclick="changeTheme('theme-green')" class="w-6 h-6 rounded-full bg-emerald-100 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all" title="森系"></button>
+                        <button onclick="changeTheme('theme-warm')" class="w-6 h-6 rounded-full bg-orange-100 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all" title="暖阳"></button>
+                    </div>
+                </div>
+
+                <div class="w-px h-8 bg-gray-400/20 hidden sm:block"></div>
+
+                <!-- 2. 数据管理 (移除了备份，保留重置) -->
+                <div class="flex flex-col gap-2">
+                    <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest">操作</span>
+                    <div class="flex gap-2">
+                        <button onclick="resetData()" class="px-3 py-1 text-xs rounded-md bg-red-50/50 hover:bg-red-100 text-red-600 border border-red-100 transition-colors">恢复默认</button>
+                    </div>
+                </div>
+
+                <!-- 3. 完成按钮 -->
+                <button id="btn-done" class="ml-auto px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2">
+                    <i data-lucide="check" class="w-4 h-4"></i> 完成
+                </button>
+            </div>
+        </div>
     </header>
 
     <!-- 主体内容 -->
-    <main id="main-container" class="flex-1 container mx-auto px-4 flex flex-col justify-center items-center max-w-4xl transition-all duration-500 py-10">
+    <main class="flex-1 container mx-auto px-4 flex flex-col justify-center items-center max-w-6xl py-10 transition-all duration-300">
         
         <!-- 欢迎语 & 时钟 -->
-        <div id="greeting-section" class="text-center mb-12 animate-fade-in-up transition-all duration-300">
-            <h1 id="clock-time" class="text-7xl md:text-8xl font-medium tracking-tight mb-4 tabular-nums cursor-default select-none text-gray-800 dark:text-white">00:00</h1>
-            <p id="greeting-text" class="text-lg md:text-xl font-normal text-gray-500 dark:text-slate-400">Loading...</p>
+        <div id="greeting-section" class="text-center mb-12 animate-fade-in-up">
+            <h1 id="clock-time" class="text-7xl md:text-9xl font-semibold tracking-tight mb-2 tabular-nums cursor-default select-none opacity-90">00:00</h1>
+            <p id="greeting-text" class="text-lg md:text-xl font-normal opacity-60">Loading...</p>
         </div>
 
         <!-- 搜索框 -->
         <div id="search-container" class="w-full max-w-2xl mb-12 relative group z-10 transition-all duration-300">
             <form id="search-form" class="relative">
-                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none transition-colors text-gray-400 group-hover:text-blue-500 dark:text-slate-500">
-                    <i data-lucide="search" class="w-[22px] h-[22px]"></i>
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none opacity-40">
+                    <i data-lucide="search" class="w-5 h-5"></i>
                 </div>
-                <input id="search-input" type="text" placeholder="Search Bing..." class="w-full pl-14 pr-36 py-4 rounded-full text-lg shadow-sm hover:shadow-md focus:shadow-lg transition-all duration-300 outline-none border bg-white border-transparent focus:border-blue-100 text-gray-800 placeholder-gray-300 dark:bg-slate-800 dark:border-slate-700 dark:focus:border-slate-600 dark:text-white dark:placeholder-slate-500">
-                <div class="absolute inset-y-0 right-2 flex items-center">
-                    <div class="flex items-center p-1 rounded-full bg-gray-100 dark:bg-slate-700/50">
-                        <button type="button" data-engine="bing" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-white">B</button>
-                        <button type="button" data-engine="google" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200">G</button>
-                        <div class="w-px h-4 mx-2 bg-gray-300 dark:bg-slate-600"></div>
-                        <button type="button" onclick="openFinanceModal()" class="p-1.5 rounded-full text-gray-400 hover:text-green-600 dark:text-slate-400 dark:hover:text-green-400 transition-colors" title="我的钱包">
-                            <i data-lucide="wallet" class="w-4 h-4"></i>
-                        </button>
+                <input id="search-input" type="text" placeholder="Search Bing..." class="w-full pl-14 pr-36 py-4 rounded-full text-lg shadow-lg shadow-blue-900/5 hover:shadow-xl focus:shadow-2xl transition-all duration-300 outline-none border border-transparent focus:border-blue-500/30 bg-white/80 placeholder-gray-400">
+                
+                <div class="absolute inset-y-0 right-2 flex items-center gap-1">
+                    <div class="flex items-center p-1 rounded-full bg-gray-100/50">
+                        <button type="button" data-engine="bing" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200">B</button>
+                        <button type="button" data-engine="google" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200">G</button>
                     </div>
+                    <div class="w-px h-4 bg-gray-300/50 mx-1"></div>
+                    <button type="button" onclick="openFinanceModal()" class="p-2 rounded-full hover:bg-green-50 text-gray-400 hover:text-green-600 transition-colors" title="我的钱包">
+                        <i data-lucide="wallet" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </form>
         </div>
 
         <!-- 链接网格 (支持拖拽) -->
-        <div id="shortcuts-container" class="w-full grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4 sm:gap-6 justify-items-center animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
-            <!-- 内容由 JS 动态生成 -->
+        <div id="shortcuts-container" class="w-full grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-x-2 gap-y-6 justify-items-center animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
+            <!-- JS 生成 -->
         </div>
     </main>
 
-    <footer class="fixed bottom-0 w-full p-4 text-center pointer-events-none">
-        <p class="text-xs text-gray-300 dark:text-slate-700">Designed for Focus & Efficiency</p>
+    <footer class="fixed bottom-0 w-full p-4 text-center pointer-events-none opacity-40 text-xs">
+        Designed for Focus & Efficiency
     </footer>
 
-    <!-- 弹窗：添加链接 -->
-    <div id="modal-add-link" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 hidden">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
-            <div class="p-6">
-                <h3 class="text-xl font-bold mb-4 dark:text-white">添加快捷方式</h3>
-                <form id="form-add-link" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1 dark:text-slate-300">名称</label>
-                        <input id="input-link-name" type="text" placeholder="例如: Bilibili" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1 dark:text-slate-300">网址</label>
-                        <input id="input-link-url" type="text" placeholder="例如: bilibili.com" class="w-full p-2 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div class="flex gap-3 mt-6 pt-2">
-                        <button type="button" id="btn-cancel-add" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300">取消</button>
-                        <button type="submit" class="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white">添加</button>
-                    </div>
-                </form>
-            </div>
+    <!-- 弹窗：添加/编辑链接 -->
+    <div id="modal-add-link" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up p-6">
+            <h3 class="text-xl font-bold mb-4 dark:text-white">添加快捷方式</h3>
+            <form id="form-add-link" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">名称</label>
+                    <input id="input-link-name" type="text" placeholder="例如: Github" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-transparent focus:bg-white dark:focus:bg-slate-600 border focus:border-blue-500 outline-none transition-all dark:text-white" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase text-gray-400 mb-1">网址</label>
+                    <input id="input-link-url" type="text" placeholder="github.com" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-transparent focus:bg-white dark:focus:bg-slate-600 border focus:border-blue-500 outline-none transition-all dark:text-white" required>
+                </div>
+                
+                <!-- 离线图标上传 -->
+                <div class="p-3 bg-blue-50 dark:bg-slate-700/50 rounded-xl border border-blue-100 dark:border-slate-600">
+                    <label class="flex items-center justify-between cursor-pointer group">
+                        <div class="flex items-center gap-3">
+                            <div id="preview-icon-container" class="w-10 h-10 rounded-lg bg-white dark:bg-slate-600 flex items-center justify-center text-gray-400 border border-gray-200 dark:border-slate-500">
+                                <i data-lucide="image" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-bold text-gray-700 dark:text-gray-200">自定义图标</div>
+                                <div id="upload-status" class="text-xs text-gray-400">点击选择本地图片 (支持离线)</div>
+                            </div>
+                        </div>
+                        <input type="file" id="input-link-icon-file" class="hidden" accept="image/*" onchange="handleIconUpload(event)">
+                        <div class="px-3 py-1.5 bg-white dark:bg-slate-600 rounded-lg text-xs font-bold shadow-sm group-hover:text-blue-500">浏览</div>
+                    </label>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                    <button type="button" id="btn-cancel-add" class="flex-1 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">取消</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/30 transition-transform active:scale-95">保存</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- 弹窗：财务概览 -->
-    <div id="modal-finance" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 hidden">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up">
-            <div class="p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold dark:text-white flex items-center gap-2">
-                        <i data-lucide="wallet" class="w-5 h-5 text-green-500"></i>
-                        财务概览
-                    </h3>
-                    <button onclick="closeFinanceModal()" class="text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-center border border-gray-100 dark:border-slate-600">
-                        <div class="text-xs text-gray-500 dark:text-slate-400 mb-1 uppercase tracking-wider">本月支出</div>
-                        <div class="text-lg font-bold text-gray-800 dark:text-white" id="modal-finance-spent">¥0.00</div>
-                    </div>
-                    <div class="p-4 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-center border border-gray-100 dark:border-slate-600">
-                        <div class="text-xs text-gray-500 dark:text-slate-400 mb-1 uppercase tracking-wider">当前余额</div>
-                        <div class="text-lg font-bold text-green-600 dark:text-green-400" id="modal-finance-balance">¥0.00</div>
-                    </div>
-                </div>
-                <div class="border-t border-gray-100 dark:border-slate-700 pt-5">
-                    <p class="text-xs text-gray-400 dark:text-slate-500 mb-3 ml-1">更新余额 (系统自动计算差额为支出)</p>
-                    <form id="form-finance" class="flex gap-2">
-                        <input id="input-balance" type="number" step="0.01" placeholder="输入最新余额" class="flex-1 p-2.5 rounded-lg border bg-gray-50 dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-green-500 outline-none font-mono text-sm" required>
-                        <button type="submit" class="px-5 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white font-medium text-sm transition-colors shadow-sm">更新</button>
-                    </form>
-                </div>
+    <div id="modal-finance" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold dark:text-white flex items-center gap-2">
+                    <i data-lucide="wallet" class="w-5 h-5 text-green-500"></i> 财务概览
+                </h3>
+                <button onclick="closeFinanceModal()" class="opacity-50 hover:opacity-100 dark:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-700 text-center"><div class="text-xs text-gray-400 mb-1 font-bold">本月支出</div><div class="text-xl font-bold text-gray-800 dark:text-white" id="modal-finance-spent">¥0</div></div>
+                <div class="p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 text-center"><div class="text-xs text-green-600/70 dark:text-green-400 mb-1 font-bold">当前余额</div><div class="text-xl font-bold text-green-600 dark:text-green-400" id="modal-finance-balance">¥0</div></div>
+            </div>
+            <form id="form-finance" class="flex gap-2 border-t border-gray-100 dark:border-slate-700 pt-5">
+                <input id="input-balance" type="number" step="0.01" placeholder="最新余额" class="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 outline-none font-mono font-bold dark:text-white" required>
+                <button type="submit" class="px-5 py-3 rounded-xl bg-black dark:bg-white dark:text-black text-white font-bold transition-transform active:scale-95">更新</button>
+            </form>
         </div>
     </div>
 
-    <script>
-        // --- 1. 配置与状态 ---
-        
-        // 旧的默认分类数据（用于初始化迁移）
+    <!-- 弹窗：云同步配置 -->
+    <div id="modal-cloud-config" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up p-6">
+            <h3 class="text-xl font-bold mb-2 dark:text-white">云端同步配置 (Firebase)</h3>
+            <p class="text-xs text-gray-500 mb-4">填写配置后，你的链接和记账数据将跨设备自动同步。数据加密存储在 Google Cloud。</p>
+            <form id="form-cloud-config" class="space-y-3">
+                <div><label class="block text-xs font-bold text-gray-500 mb-1">API Key</label><input id="input-firebase-apikey" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" placeholder="AIzaSy..." required></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Project ID</label><input id="input-firebase-projectid" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div>
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1">App ID</label><input id="input-firebase-appid" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div>
+                </div>
+                <div class="flex gap-3 mt-6 pt-2">
+                    <button type="button" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300" onclick="document.getElementById('modal-cloud-config').classList.add('hidden')">取消</button>
+                    <button type="submit" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold">连接并同步</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 逻辑脚本 (Module) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // --- 默认配置 ---
         const DEFAULT_SHORTCUTS = [
             { name: 'Bing', url: 'https://www.bing.com/' },
             { name: 'Google', url: 'https://www.google.com/' },
             { name: 'ChatGPT', url: 'https://chat.openai.com/' },
-            { name: 'Claude', url: 'https://claude.ai/' },
-            { name: 'Gemini', url: 'https://gemini.google.com/' },
-            { name: 'Scholar', url: 'https://scholar.google.com/' },
-            { name: 'ArXiv', url: 'https://arxiv.org/' },
             { name: 'GitHub', url: 'https://github.com/' },
             { name: 'Bilibili', url: 'https://www.bilibili.com/' },
-            { name: 'YouTube', url: 'https://www.youtube.com/' },
         ];
-
-        // 每日问候语库
-        const DAILY_GREETINGS = [
-            "保持渴望，保持愚蠢。", 
-            "代码如诗，逻辑为魂。", 
-            "今天的努力是明天的基石。", 
-            "不仅要写代码，更要改变世界。",
-            "休息是为了走更远的路。",
-            "Keep it simple, stupid.",
-            "Stay Focus, Stay Efficient.",
-            "每一个 Bug 都是学习的机会。",
-            "喝杯咖啡，放松一下。",
-            "灵感总在不经意间降临。",
-            "做难事必有所得。",
-            "Hello World, Hello Future."
-        ];
+        const GREETINGS = ["保持渴望，保持愚蠢。", "代码如诗，逻辑为魂。", "做难事必有所得。", "Stay Focus, Stay Efficient.", "Hello World, Hello Future.", "计算机科学，是关于效率的艺术。"];
 
         let state = {
-            shortcuts: [], // 扁平化的快捷方式列表
+            shortcuts: JSON.parse(localStorage.getItem('myShortcuts')) || DEFAULT_SHORTCUTS,
             isEditing: false,
-            searchEngine: 'bing', // 默认 Bing
-            isDarkMode: localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches),
-            financeLogs: JSON.parse(localStorage.getItem('myFinanceLogs')) || []
+            searchEngine: 'bing',
+            theme: localStorage.getItem('myTheme') || 'theme-light',
+            financeLogs: JSON.parse(localStorage.getItem('myFinanceLogs')) || [],
+            tempIconBase64: null,
+            firebaseConfig: JSON.parse(localStorage.getItem('myFirebaseConfig')) || null,
+            db: null
         };
 
-        // --- 2. 核心功能函数 ---
-
         function init() {
-            if (state.isDarkMode) document.documentElement.classList.add('dark');
-            
-            // 数据迁移逻辑：如果存在旧的分类数据，将其扁平化
-            const oldData = localStorage.getItem('myStartPageData');
-            const savedShortcuts = localStorage.getItem('myShortcuts');
-
-            if (savedShortcuts) {
-                state.shortcuts = JSON.parse(savedShortcuts);
-            } else if (oldData) {
-                // 迁移旧数据
-                try {
-                    const categories = JSON.parse(oldData);
-                    let flattened = [];
-                    categories.forEach(cat => {
-                        if (cat.links) flattened = flattened.concat(cat.links);
-                    });
-                    state.shortcuts = flattened;
-                    saveState(); // 保存新格式
-                } catch(e) {
-                    state.shortcuts = DEFAULT_SHORTCUTS;
-                }
-            } else {
-                state.shortcuts = DEFAULT_SHORTCUTS;
-            }
-
-            updateClock();
-            setInterval(updateClock, 1000);
-            
+            applyTheme(state.theme);
             renderShortcuts();
             updateEngineUI();
+            updateClock(); setInterval(updateClock, 1000);
             lucide.createIcons();
-            
             document.getElementById('search-input').focus();
+            
+            if (state.firebaseConfig) { initFirebase(state.firebaseConfig); }
+        }
+
+        // --- Firebase 同步 ---
+        async function initFirebase(config) {
+            updateCloudStatus('connecting');
+            try {
+                const app = initializeApp(config);
+                const auth = getAuth(app);
+                state.db = getFirestore(app);
+                await signInAnonymously(auth);
+                
+                // 填充表单
+                document.getElementById('input-firebase-apikey').value = config.apiKey;
+                document.getElementById('input-firebase-projectid').value = config.projectId;
+                document.getElementById('input-firebase-appid').value = config.appId;
+
+                const docRef = doc(state.db, "users", "my_sync_data_v1"); // 固定ID，多用户需修改
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        // 简单覆盖策略：以云端为准
+                        if(JSON.stringify(data.shortcuts) !== JSON.stringify(state.shortcuts) || 
+                           JSON.stringify(data.financeLogs) !== JSON.stringify(state.financeLogs) ||
+                           data.theme !== state.theme) {
+                            
+                            state.shortcuts = data.shortcuts || [];
+                            state.financeLogs = data.financeLogs || [];
+                            if(data.theme && data.theme !== state.theme) {
+                                state.theme = data.theme;
+                                applyTheme(state.theme);
+                            }
+                            
+                            localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
+                            localStorage.setItem('myFinanceLogs', JSON.stringify(state.financeLogs));
+                            localStorage.setItem('myTheme', state.theme);
+                            renderShortcuts();
+                        }
+                        updateCloudStatus('synced');
+                    } else {
+                        saveToCloud(); // 初次上传
+                        updateCloudStatus('synced');
+                    }
+                });
+            } catch (e) {
+                console.error("Firebase Error", e);
+                updateCloudStatus('error');
+            }
+        }
+
+        async function saveToCloud() {
+            if (!state.db) return;
+            updateCloudStatus('syncing');
+            try {
+                await setDoc(doc(state.db, "users", "my_sync_data_v1"), {
+                    shortcuts: state.shortcuts,
+                    financeLogs: state.financeLogs,
+                    theme: state.theme,
+                    updatedAt: new Date().toISOString()
+                });
+                updateCloudStatus('synced');
+            } catch(e) { updateCloudStatus('error'); }
+        }
+
+        function updateCloudStatus(status) {
+            const text = document.getElementById('cloud-text');
+            const dot = document.getElementById('cloud-dot');
+            if (status === 'connecting') { text.innerText = '连接中'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white animate-pulse"; }
+            else if (status === 'synced') { text.innerText = '已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
+            else if (status === 'syncing') { text.innerText = '同步中'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white animate-pulse"; }
+            else { text.innerText = '连接失败'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white"; }
+        }
+
+        document.getElementById('form-cloud-config').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const config = {
+                apiKey: document.getElementById('input-firebase-apikey').value.trim(),
+                authDomain: `${document.getElementById('input-firebase-projectid').value.trim()}.firebaseapp.com`,
+                projectId: document.getElementById('input-firebase-projectid').value.trim(),
+                storageBucket: `${document.getElementById('input-firebase-projectid').value.trim()}.appspot.com`,
+                messagingSenderId: "123456789", 
+                appId: document.getElementById('input-firebase-appid').value.trim()
+            };
+            localStorage.setItem('myFirebaseConfig', JSON.stringify(config));
+            state.firebaseConfig = config;
+            document.getElementById('modal-cloud-config').classList.add('hidden');
+            initFirebase(config);
+        });
+
+        // --- 核心逻辑 ---
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock-time').innerText = now.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'});
+            document.getElementById('date-display').innerText = now.toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'});
+            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            document.getElementById('greeting-text').innerText = GREETINGS[dayOfYear % GREETINGS.length];
         }
 
         function saveState() {
             localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
-        }
-        
-        function saveFinance() {
-            localStorage.setItem('myFinanceLogs', JSON.stringify(state.financeLogs));
+            saveToCloud();
         }
 
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clock-time').innerText = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-            document.getElementById('date-display').innerText = now.toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
-            
-            const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
-            const greetingIndex = dayOfYear % DAILY_GREETINGS.length;
-            document.getElementById('greeting-text').innerText = DAILY_GREETINGS[greetingIndex];
+        // --- UI 操作 ---
+        window.changeTheme = (themeName) => {
+            state.theme = themeName;
+            localStorage.setItem('myTheme', themeName);
+            applyTheme(themeName);
+            saveToCloud(); // 主题也同步
         }
 
-        function toggleTheme() {
-            state.isDarkMode = !state.isDarkMode;
-            if (state.isDarkMode) {
-                document.documentElement.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-            }
+        function applyTheme(themeName) {
+            const body = document.getElementById('app-body');
+            body.className = `min-h-screen font-sans overflow-x-hidden flex flex-col ${themeName}`;
+            if (themeName === 'theme-dark') document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
         }
+
+        // 窗口挂载
+        window.openCloudModal = () => document.getElementById('modal-cloud-config').classList.remove('hidden');
+        window.openFinanceModal = () => { document.getElementById('modal-finance').classList.remove('hidden'); const l=state.financeLogs; const last=l.length>0?l[l.length-1]:{balance:0}; document.getElementById('modal-finance-balance').innerText='¥ '+parseFloat(last.balance).toLocaleString(); document.getElementById('input-balance').focus(); };
+        window.closeFinanceModal = () => document.getElementById('modal-finance').classList.add('hidden');
+        window.deleteLink = (i) => { if(confirm("确定删除?")) { state.shortcuts.splice(i,1); saveState(); renderShortcuts(); } };
+        window.handleIconUpload = (e) => { const f=e.target.files[0]; if(!f)return; if(f.size>200*1024){alert("图片需小于200KB");return;} const r=new FileReader(); r.onload=(ev)=>{ state.tempIconBase64=ev.target.result; document.getElementById('preview-icon').classList.remove('hidden'); document.getElementById('preview-icon').querySelector('img').src=state.tempIconBase64; document.getElementById('upload-status').innerText="已选择"; }; r.readAsDataURL(f); };
+        window.resetData = () => { if(confirm("重置所有数据？")) { localStorage.clear(); location.reload(); } };
 
         function toggleEditMode() {
             state.isEditing = !state.isEditing;
-            const btn = document.getElementById('btn-edit');
-            const main = document.getElementById('main-container');
-            const searchContainer = document.getElementById('search-container');
-            const greeting = document.getElementById('greeting-section');
-            const btnReset = document.getElementById('btn-reset');
-
-            if (state.isEditing) {
-                btn.className = "p-2 rounded-full transition-all duration-300 flex items-center gap-2 bg-blue-100 text-blue-600 ring-2 ring-blue-500";
-                document.getElementById('icon-settings').classList.add('hidden');
-                document.getElementById('icon-check').classList.remove('hidden');
-                document.getElementById('text-edit-done').classList.remove('hidden');
-                greeting.classList.add('opacity-50', 'blur-[1px]');
-                btnReset.classList.remove('hidden');
+            const els = { btn:document.getElementById('btn-edit'), doneBtn:document.getElementById('btn-done'), panel:document.getElementById('edit-panel'), main:document.getElementById('main-container'), search:document.getElementById('search-container') };
+            
+            if(state.isEditing){
+                els.btn.classList.add('hidden');
+                els.panel.classList.remove('hidden');
+                els.main.classList.add('scale-95', 'opacity-80');
+                els.search.classList.add('pointer-events-none', 'opacity-50');
             } else {
-                btn.className = "p-2 rounded-full transition-all duration-300 flex items-center gap-2 bg-white hover:bg-gray-100 text-slate-600 shadow-sm dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-400";
-                document.getElementById('icon-settings').classList.remove('hidden');
-                document.getElementById('icon-check').classList.add('hidden');
-                document.getElementById('text-edit-done').classList.add('hidden');
-                greeting.classList.remove('opacity-50', 'blur-[1px]');
-                btnReset.classList.add('hidden');
+                els.btn.classList.remove('hidden');
+                els.panel.classList.add('hidden');
+                els.main.classList.remove('scale-95', 'opacity-80');
+                els.search.classList.remove('pointer-events-none', 'opacity-50');
             }
             renderShortcuts();
         }
 
-        function updateEngineUI() {
-            const input = document.getElementById('search-input');
-            const btns = document.querySelectorAll('.engine-btn');
-
-            btns.forEach(btn => {
-                const engine = btn.dataset.engine;
-                if (engine === state.searchEngine) {
-                    btn.className = 'engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 bg-white text-blue-600 shadow-sm dark:bg-slate-600 dark:text-white';
-                } else {
-                    btn.className = 'engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200 text-gray-400 hover:text-gray-600 dark:text-slate-400 dark:hover:text-slate-200';
-                }
-            });
-
-            input.placeholder = `Search ${state.searchEngine === 'google' ? 'Google' : 'Bing'}...`;
-        }
-
-        // --- 财务逻辑 ---
-        window.openFinanceModal = () => {
-            document.getElementById('modal-finance').classList.remove('hidden');
-            const lastLog = state.financeLogs.length > 0 ? state.financeLogs[state.financeLogs.length - 1] : { balance: 0 };
-            document.getElementById('modal-finance-balance').innerText = '¥ ' + parseFloat(lastLog.balance).toLocaleString('zh-CN', {minimumFractionDigits: 2});
-
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            const thisMonthLogs = state.financeLogs.filter(log => {
-                const d = new Date(log.date);
-                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-            }).sort((a, b) => new Date(a.date) - new Date(b.date));
-
-            let totalSpent = 0;
-            for (let i = 1; i < thisMonthLogs.length; i++) {
-                const prev = thisMonthLogs[i-1].balance;
-                const curr = thisMonthLogs[i].balance;
-                if (curr < prev) totalSpent += (prev - curr);
-            }
-            document.getElementById('modal-finance-spent').innerText = '¥ ' + totalSpent.toLocaleString('zh-CN', {minimumFractionDigits: 2});
-            const input = document.getElementById('input-balance');
-            input.value = lastLog.balance || '';
-            input.focus();
-        };
-
-        window.closeFinanceModal = () => { document.getElementById('modal-finance').classList.add('hidden'); };
-
-        document.getElementById('form-finance').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const balanceVal = parseFloat(document.getElementById('input-balance').value);
-            if (isNaN(balanceVal)) return;
-            state.financeLogs.push({ date: new Date().toISOString(), balance: balanceVal });
-            state.financeLogs.sort((a, b) => new Date(a.date) - new Date(b.date));
-            saveFinance();
-            openFinanceModal();
-        });
-
-        // --- 拖拽与渲染 ---
-
-        function getFaviconUrl(url) {
-            return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`;
-        }
+        // 渲染
+        let dragSrcIndex = null;
+        function getFaviconUrl(url) { return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`; }
+        function getAvatarColorClass(name) { let h=0; for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h); return `avatar-bg-${Math.abs(h)%8}`; }
 
         function renderShortcuts() {
-            const container = document.getElementById('shortcuts-container');
-            container.innerHTML = '';
-
+            const container = document.getElementById('shortcuts-container'); container.innerHTML = '';
             state.shortcuts.forEach((link, index) => {
                 const item = document.createElement('div');
-                item.className = `relative group ${state.isEditing ? 'cursor-move' : ''}`;
+                item.className = `relative group flex flex-col items-center gap-2 p-3 rounded-xl transition-all hover:bg-black/5 dark:hover:bg-white/10 ${state.isEditing ? 'cursor-move bg-black/5 dark:bg-white/5 border border-dashed border-gray-300 dark:border-gray-600' : ''}`;
+                if(state.isEditing){ item.draggable=true; item.ondragstart=(e)=>{dragSrcIndex=index;e.target.classList.add('dragging');}; item.ondragover=(e)=>e.preventDefault(); item.ondrop=(e)=>{const d=state.shortcuts[dragSrcIndex];state.shortcuts.splice(dragSrcIndex,1);state.shortcuts.splice(index,0,d);saveState();renderShortcuts();}; }
                 
-                // 拖拽属性
-                if (state.isEditing) {
-                    item.setAttribute('draggable', 'true');
-                    item.addEventListener('dragstart', (e) => handleDragStart(e, index));
-                    item.addEventListener('dragover', handleDragOver);
-                    item.addEventListener('drop', (e) => handleDrop(e, index));
-                    item.addEventListener('dragenter', handleDragEnter);
-                    item.addEventListener('dragleave', handleDragLeave);
+                let iconContent;
+                if(link.customIcon) iconContent = `<img src="${link.customIcon}" class="w-full h-full object-contain rounded-full">`;
+                else {
+                    const fav = getFaviconUrl(link.url); const char = (link.name||'L').charAt(0).toUpperCase(); const col = getAvatarColorClass(link.name||'L');
+                    iconContent = `<img src="${fav}" class="w-full h-full object-contain favicon-img transition-opacity duration-300" onload="this.style.opacity=1" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')"><div class="w-full h-full hidden items-center justify-center text-lg font-bold rounded-full ${col} flex">${char}</div>`;
                 }
-
-                const faviconSrc = getFaviconUrl(link.url);
-
-                const contentHtml = `
-                    <a href="${state.isEditing ? 'javascript:void(0)' : link.url}" 
-                       target="${state.isEditing ? '' : '_blank'}"
-                       class="flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 group-hover:bg-white/50 dark:group-hover:bg-white/10 ${state.isEditing ? 'pointer-events-none' : ''}">
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center bg-white shadow-sm dark:bg-slate-800 overflow-hidden p-2.5 transition-transform group-hover:scale-110">
-                            <img src="${faviconSrc}" alt="${link.name}" class="w-full h-full object-contain favicon-img" onerror="this.src='https://www.google.com/s2/favicons?domain=example.com&sz=128'">
-                        </div>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 w-24 text-center truncate">${link.name}</span>
-                    </a>
-                `;
-                
-                const deleteBtnHtml = state.isEditing ? `
-                    <button onclick="deleteLink(${index})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-all z-10 scale-0 group-hover:scale-100">
-                        <i data-lucide="x" class="w-3 h-3"></i>
-                    </button>
-                ` : '';
-
-                item.innerHTML = contentHtml + deleteBtnHtml;
+                item.innerHTML = `<a href="${state.isEditing?'javascript:void(0)':link.url}" target="_blank" class="flex flex-col items-center gap-3 w-full ${state.isEditing?'pointer-events-none':''}"><div class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 shadow-sm p-2 flex items-center justify-center overflow-hidden shortcut-icon-bg transition-transform group-hover:scale-105">${iconContent}</div><span class="text-xs font-medium opacity-80 w-24 text-center truncate dark:text-gray-300">${link.name}</span></a>${state.isEditing?`<button onclick="window.deleteLink(${index})" class="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-sm hover:scale-110 transition-transform"><i data-lucide="x" class="w-3 h-3"></i></button>`:''}`;
                 container.appendChild(item);
             });
-
-            if (state.isEditing) {
-                const addBtn = document.createElement('button');
-                addBtn.onclick = () => openAddModal();
-                addBtn.className = "flex flex-col items-center gap-3 p-4 rounded-xl transition-all duration-200 hover:bg-white/50 dark:hover:bg-white/10 group";
-                addBtn.innerHTML = `
-                    <div class="w-12 h-12 rounded-full flex items-center justify-center transition-colors bg-gray-100 text-gray-400 dark:bg-slate-800 dark:text-slate-500 group-hover:text-blue-500">
-                        <i data-lucide="plus" class="w-6 h-6"></i>
-                    </div>
-                    <span class="text-sm font-medium text-gray-400 dark:text-gray-500 w-24 text-center">添加</span>
-                `;
-                container.appendChild(addBtn);
+            if(state.isEditing){
+                const addBtn = document.createElement('div'); addBtn.className="flex flex-col items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 opacity-60 hover:opacity-100 transition-opacity"; addBtn.onclick=()=>{document.getElementById('modal-add-link').classList.remove('hidden'); state.tempIconBase64=null; document.getElementById('input-link-name').value=''; document.getElementById('input-link-url').value=''; document.getElementById('preview-icon').classList.add('hidden'); document.getElementById('upload-status').innerText='未选择';};
+                addBtn.innerHTML=`<div class="w-14 h-14 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center"><i data-lucide="plus" class="w-6 h-6 dark:text-gray-400"></i></div><span class="text-xs font-medium dark:text-gray-400">添加</span>`; container.appendChild(addBtn);
             }
-
             lucide.createIcons();
         }
 
-        // --- 拖拽事件处理 ---
-        let dragSrcIndex = null;
-
-        function handleDragStart(e, index) {
-            dragSrcIndex = index;
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', index);
-            e.target.classList.add('dragging');
-        }
-
-        function handleDragOver(e) {
-            if (e.preventDefault) e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            return false;
-        }
-
-        function handleDragEnter(e) {
-            this.classList.add('scale-105', 'bg-gray-100', 'dark:bg-slate-700', 'rounded-xl');
-        }
-
-        function handleDragLeave(e) {
-            this.classList.remove('scale-105', 'bg-gray-100', 'dark:bg-slate-700', 'rounded-xl');
-        }
-
-        function handleDrop(e, targetIndex) {
-            e.stopPropagation();
-            // 恢复样式
-            const cols = document.querySelectorAll('#shortcuts-container > div');
-            cols.forEach(col => col.classList.remove('dragging', 'scale-105', 'bg-gray-100', 'dark:bg-slate-700', 'rounded-xl'));
-
-            if (dragSrcIndex !== targetIndex) {
-                // 移动数组元素
-                const draggedItem = state.shortcuts[dragSrcIndex];
-                state.shortcuts.splice(dragSrcIndex, 1);
-                state.shortcuts.splice(targetIndex, 0, draggedItem);
-                saveState();
-                renderShortcuts();
-            }
-            return false;
-        }
-
-        // --- 事件监听 ---
-
-        document.getElementById('search-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const term = document.getElementById('search-input').value.trim();
-            if (!term) return;
-            window.location.href = state.searchEngine === 'google' 
-                ? `https://www.google.com/search?q=${encodeURIComponent(term)}`
-                : `https://www.bing.com/search?q=${encodeURIComponent(term)}`;
-        });
-
-        document.querySelectorAll('.engine-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                state.searchEngine = btn.dataset.engine;
-                updateEngineUI();
-                document.getElementById('search-input').focus();
-            });
-        });
-
-        document.getElementById('btn-theme').addEventListener('click', toggleTheme);
-        document.getElementById('btn-edit').addEventListener('click', toggleEditMode);
-        document.getElementById('btn-reset').addEventListener('click', () => {
-            if (confirm('确定要恢复默认设置吗？')) {
-                state.shortcuts = DEFAULT_SHORTCUTS;
-                saveState();
-                toggleEditMode();
-            }
-        });
-
-        window.openAddModal = () => {
-            document.getElementById('modal-add-link').classList.remove('hidden');
-            document.getElementById('input-link-name').focus();
-        }
-
-        document.getElementById('btn-cancel-add').addEventListener('click', () => {
-            document.getElementById('modal-add-link').classList.add('hidden');
-            document.getElementById('form-add-link').reset();
-        });
-
-        document.getElementById('form-add-link').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('input-link-name').value;
-            let url = document.getElementById('input-link-url').value;
-
-            if (name && url) {
-                if (!url.startsWith('http')) url = 'https://' + url;
-                const newLink = { name, url };
-                state.shortcuts.push(newLink);
-                saveState();
-                renderShortcuts();
-                document.getElementById('modal-add-link').classList.add('hidden');
-                document.getElementById('form-add-link').reset();
-            }
-        });
-
-        window.deleteLink = (index) => {
-            if (confirm('确定删除?')) {
-                state.shortcuts.splice(index, 1);
-                saveState();
-                renderShortcuts();
-            }
-        };
+        document.getElementById('btn-edit').onclick = toggleEditMode;
+        document.getElementById('btn-done').onclick = toggleEditMode;
+        document.getElementById('btn-cancel-add').onclick = () => document.getElementById('modal-add-link').classList.add('hidden');
+        document.getElementById('form-add-link').onsubmit = (e) => { e.preventDefault(); const n = document.getElementById('input-link-name').value; let u = document.getElementById('input-link-url').value; if(n&&u){ if(!u.startsWith('http'))u='https://'+u; state.shortcuts.push({name:n, url:u, customIcon:state.tempIconBase64}); saveState(); renderShortcuts(); document.getElementById('modal-add-link').classList.add('hidden'); } };
+        document.getElementById('search-form').onsubmit = (e) => { e.preventDefault(); const t=document.getElementById('search-input').value.trim(); if(t) window.location.href=(state.searchEngine==='bing'?'https://www.bing.com/search?q=':'https://www.google.com/search?q=')+encodeURIComponent(t); };
+        document.getElementById('form-finance').onsubmit = (e) => { e.preventDefault(); const v=parseFloat(document.getElementById('input-balance').value); if(!isNaN(v)){ state.financeLogs.push({date:new Date().toISOString(), balance:v}); saveFinance(); saveToCloud(); window.openFinanceModal(); } };
+        function updateEngineUI() { const btns=document.querySelectorAll('.engine-btn'); btns.forEach(b=>{ const sel=b.dataset.engine===state.searchEngine; b.className=`engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all ${sel?'bg-black text-white dark:bg-white dark:text-black shadow-md':'text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300'}`; }); document.getElementById('search-input').placeholder=`Search ${state.searchEngine==='bing'?'Bing':'Google'}...`; }
+        document.querySelectorAll('.engine-btn').forEach(b=>b.onclick=()=>{state.searchEngine=b.dataset.engine; updateEngineUI(); document.getElementById('search-input').focus();});
+        document.getElementById('search-input').addEventListener('keydown', (e) => { if(e.key === 'Tab'){ e.preventDefault(); state.searchEngine = state.searchEngine==='bing'?'google':'bing'; updateEngineUI(); } });
 
         init();
     </script>
