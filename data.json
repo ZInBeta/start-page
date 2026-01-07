@@ -32,6 +32,7 @@
     {
       "name": "GitHub",
       "url": "https://github.com/",
+      "customIcon": "github.png",
       "clicks": 0
     },
     {
@@ -44,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:20:06.108Z"
+  "updatedAt": "2026-01-07T06:20:15.452Z"
 }
