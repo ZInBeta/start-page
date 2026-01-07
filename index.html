@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>新标签页</title>
+    <title>New Tab</title>
+    
+    <!-- 修复：添加默认 Favicon，防止浏览器因找不到图标而一直转圈 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.loli.net">
@@ -34,19 +38,16 @@
     <style type="text/tailwindcss">
         body { font-family: 'Outfit', sans-serif; transition: background-image 0.5s ease, background-color 0.5s ease, color 0.3s ease; }
         .glass-panel { @apply backdrop-blur-md bg-white/60 border border-white/40 dark:bg-slate-800/60 dark:border-slate-700/50; }
-        input[type="search"]::-webkit-search-decoration,
-        input[type="search"]::-webkit-search-cancel-button,
-        input[type="search"]::-webkit-search-results-button,
-        input[type="search"]::-webkit-search-results-decoration { display: none; }
+        input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-results-button { display: none; }
         .shortcut-item { transition: transform 0.2s, background-color 0.2s; }
-        /* 主题定义 */
+        .privacy-blur { filter: blur(6px); transition: filter 0.3s ease; cursor: pointer; }
+        .privacy-blur:hover { filter: blur(0); }
         .theme-light { @apply bg-gray-50 text-gray-800; }
         .theme-dark { @apply bg-slate-900 text-slate-100; }
         .theme-blue { @apply bg-gradient-to-br from-blue-50 to-indigo-100 text-slate-800 dark:from-slate-900 dark:to-indigo-950 dark:text-slate-100; }
         .theme-green { @apply bg-gradient-to-br from-emerald-50 to-teal-100 text-teal-900 dark:from-slate-900 dark:to-emerald-950 dark:text-slate-100; }
         .theme-purple { @apply bg-gradient-to-br from-fuchsia-50 to-purple-100 text-purple-900 dark:from-slate-900 dark:to-purple-950 dark:text-slate-100; }
         .theme-warm { @apply bg-gradient-to-br from-orange-50 to-amber-100 text-orange-900 dark:from-slate-900 dark:to-orange-950 dark:text-slate-100; }
-        /* 头像背景 */
         .avatar-bg-0 { @apply bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200; }
         .avatar-bg-1 { @apply bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-200; }
         .avatar-bg-2 { @apply bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-200; }
@@ -69,13 +70,13 @@
                     </div>
                     <span id="cloud-text" class="text-xs font-bold opacity-80">配置同步</span>
                 </div>
-                <button onclick="window.manualSync()" class="p-2 rounded-full glass-panel hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all" title="立即同步">
+                <button onclick="window.manualSync()" class="p-2 rounded-full glass-panel hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all" title="立即从 GitHub 同步">
                     <i data-lucide="refresh-cw" id="sync-icon" class="w-4 h-4 opacity-70"></i>
                 </button>
             </div>
             <div class="flex items-center gap-3">
                 <div id="date-display" class="text-sm font-medium opacity-60 hidden md:block select-none"></div>
-                <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 dark:bg-slate-700/50 dark:hover:bg-slate-600 shadow-sm" title="设置">
+                <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 dark:bg-slate-700/50 dark:hover:bg-slate-600 shadow-sm" title="设置 / 编辑布局">
                     <i data-lucide="settings-2" class="w-5 h-5 opacity-70"></i>
                 </button>
             </div>
@@ -87,25 +88,23 @@
                     <div class="flex items-center gap-3">
                         <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest shrink-0">风格</span>
                         <div class="flex gap-2">
-                            <button onclick="changeTheme('theme-light')" class="w-5 h-5 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="雅白"></button>
-                            <button onclick="changeTheme('theme-dark')" class="w-5 h-5 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="深邃"></button>
-                            <button onclick="changeTheme('theme-blue')" class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="极光"></button>
-                            <button onclick="changeTheme('theme-green')" class="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="森系"></button>
-                            <button onclick="changeTheme('theme-purple')" class="w-5 h-5 rounded-full bg-gradient-to-br from-fuchsia-300 to-purple-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="梦幻"></button>
-                            <button onclick="changeTheme('theme-warm')" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="暖阳"></button>
+                            <button onclick="changeTheme('theme-light')" class="w-5 h-5 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm"></button>
+                            <button onclick="changeTheme('theme-dark')" class="w-5 h-5 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm"></button>
+                            <button onclick="changeTheme('theme-blue')" class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm"></button>
+                            <button onclick="changeTheme('theme-green')" class="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm"></button>
+                            <button onclick="changeTheme('theme-purple')" class="w-5 h-5 rounded-full bg-gradient-to-br from-fuchsia-300 to-purple-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm"></button>
+                            <button onclick="changeTheme('theme-warm')" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm"></button>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                         <button onclick="resetData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300 whitespace-nowrap">重置</button>
-                        <button id="btn-done" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-1.5 whitespace-nowrap">
-                            <i data-lucide="check" class="w-3.5 h-3.5"></i> 完成
-                        </button>
+                        <button id="btn-done" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="check" class="w-3.5 h-3.5"></i> 完成</button>
                     </div>
                 </div>
                 <div class="pt-3 border-t border-gray-200 dark:border-slate-700">
                     <label class="block text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">Github 图标仓库前缀 (Base URL)</label>
                     <div class="flex gap-2">
-                        <input id="input-base-url" type="text" placeholder="https://cdn.jsdelivr.net/gh/User/Repo@main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
+                        <input id="input-base-url" type="text" placeholder="推荐: https://cdn.jsdelivr.net/gh/你的ID/仓库@main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
                         <button onclick="window.saveBaseUrl(document.getElementById('input-base-url').value)" class="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold transition-colors">保存</button>
                     </div>
                     <p class="text-[10px] text-gray-400 mt-1">💡 提示：图标将完全根据点击热度自动排序。</p>
@@ -170,7 +169,7 @@
         </div>
     </div>
     
-    <div id="modal-finance" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden"><div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold dark:text-white flex items-center gap-2"><i data-lucide="wallet" class="w-5 h-5 text-green-500"></i> 财务概览</h3><button onclick="window.closeFinanceModal()" class="opacity-50 hover:opacity-100 dark:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-700 text-center"><div class="text-xs text-gray-400 mb-1 font-bold">本月支出</div><div class="text-xl font-bold text-gray-800 dark:text-white" id="modal-finance-spent">¥0</div></div><div class="p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 text-center"><div class="text-xs text-green-600/70 dark:text-green-400 mb-1 font-bold">当前余额</div><div class="text-xl font-bold text-green-600 dark:text-green-400" id="modal-finance-balance">¥0</div></div></div><form id="form-finance" class="flex gap-2 border-t border-gray-100 dark:border-slate-700 pt-5"><input id="input-balance" type="number" step="0.01" placeholder="最新余额" class="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 outline-none font-mono font-bold dark:text-white" required><button type="submit" class="px-5 py-3 rounded-xl bg-black dark:bg-white dark:text-black text-white font-bold transition-transform active:scale-95">更新</button></form></div></div>
+    <div id="modal-finance" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden"><div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold dark:text-white flex items-center gap-2"><i data-lucide="wallet" class="w-5 h-5 text-green-500"></i> 财务概览</h3><button onclick="window.closeFinanceModal()" class="opacity-50 hover:opacity-100 dark:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-700 text-center"><div class="text-xs text-gray-400 mb-1 font-bold">本月支出</div><div class="text-xl font-bold text-gray-800 dark:text-white privacy-blur" id="modal-finance-spent">¥0</div></div><div class="p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 text-center"><div class="text-xs text-green-600/70 dark:text-green-400 mb-1 font-bold">当前余额</div><div class="text-xl font-bold text-green-600 dark:text-green-400 privacy-blur" id="modal-finance-balance">¥0</div></div></div><form id="form-finance" class="flex gap-2 border-t border-gray-100 dark:border-slate-700 pt-5"><input id="input-balance" type="number" step="0.01" placeholder="更新余额 (如: -50 或 1000)" class="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 outline-none font-mono font-bold dark:text-white" required><button type="submit" class="px-5 py-3 rounded-xl bg-black dark:bg-white dark:text-black text-white font-bold transition-transform active:scale-95">记一笔</button></form></div></div>
 
     <script type="module">
         const DEFAULT_SHORTCUTS = [
@@ -197,8 +196,6 @@
             ghToken: localStorage.getItem('ghToken') || '',
             ghSha: null
         };
-
-        // 全局变量，用于记录待处理的同步类型 ('fast' | 'slow' | null)
         let pendingSyncType = null;
 
         function init() {
@@ -207,40 +204,70 @@
             document.getElementById('input-gh-owner').value = state.ghOwner;
             document.getElementById('input-gh-repo').value = state.ghRepo;
             document.getElementById('input-gh-token').value = state.ghToken;
-
             sortShortcuts(); 
-
-            // 仅在有配置时尝试一次同步，不轮询
-            if(state.ghOwner && state.ghRepo && state.ghToken) {
-                pullFromGitHub();
+            
+            // 核心修改：缩短超时为 2 秒，避免一直转圈
+            if(state.ghOwner && state.ghRepo && state.ghToken && navigator.onLine) {
+                // 启动时只给 2 秒尝试同步
+                pullFromGitHub(2000);
             }
 
             renderShortcuts();
             updateEngineUI();
             updateClock(); setInterval(updateClock, 1000);
             lucide.createIcons();
-            
             document.getElementById('search-input').focus();
-            document.getElementById('search-input').addEventListener('keydown', (e) => { if(e.key === 'Tab'){ e.preventDefault(); state.searchEngine = state.searchEngine==='bing'?'google':'bing'; updateEngineUI(); } });
+            document.getElementById('search-input').addEventListener('keydown', (e) => { 
+                if(e.key === 'Tab'){ e.preventDefault(); state.searchEngine = state.searchEngine==='bing'?'google':'bing'; updateEngineUI(); } 
+            });
         }
 
-        function sortShortcuts() {
-            state.shortcuts.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
-        }
+        function sortShortcuts() { state.shortcuts.sort((a, b) => (b.clicks || 0) - (a.clicks || 0)); }
 
         window.manualSync = () => {
             const icon = document.getElementById('sync-icon');
             icon.classList.add('animate-spin');
-            pullFromGitHub().finally(() => setTimeout(() => icon.classList.remove('animate-spin'), 1000));
+            // 手动刷新给 10 秒超时
+            pullFromGitHub(10000).finally(() => setTimeout(() => icon.classList.remove('animate-spin'), 1000));
         };
 
-        async function pullFromGitHub() {
-            updateCloudStatus('connecting');
+        document.getElementById('search-form').onsubmit = (e) => { 
+            e.preventDefault(); 
+            const t = document.getElementById('search-input').value.trim(); 
+            if(!t) return;
+            if(t.startsWith('g ')) { window.location.href = 'https://www.google.com/search?q=' + encodeURIComponent(t.substring(2)); return; }
+            if(t.startsWith('b ')) { window.location.href = 'https://search.bilibili.com/all?keyword=' + encodeURIComponent(t.substring(2)); return; }
+            if(t.startsWith('gh ')) { window.location.href = 'https://github.com/search?q=' + encodeURIComponent(t.substring(3)); return; }
+            if(t.startsWith('w ')) {
+                const amount = parseFloat(t.substring(2));
+                if(!isNaN(amount)) {
+                    const lastLog = state.financeLogs.length > 0 ? state.financeLogs[state.financeLogs.length-1] : {balance:0};
+                    const rawStr = t.substring(2).trim();
+                    let isIncome = rawStr.startsWith('+');
+                    let val = Math.abs(amount);
+                    let finalChange = isIncome ? val : -val; 
+                    let current = lastLog.balance || 0;
+                    let next = current + finalChange;
+                    state.financeLogs.push({date:new Date().toISOString(), balance: next});
+                    saveState(2000);
+                    alert(`记账成功！\n变动: ${finalChange}\n当前余额: ${next}`);
+                    document.getElementById('search-input').value = '';
+                    return;
+                }
+            }
+            window.location.href = (state.searchEngine==='bing'?'https://www.bing.com/search?q=':'https://www.google.com/search?q=') + encodeURIComponent(t); 
+        };
+
+        // Git Sync Logic - 支持自定义超时
+        async function pullFromGitHub(timeoutMs = 10000) {
+            // 只有手动刷新才显示明显的文字，自动刷新只变小点
+            if(timeoutMs > 2000) updateCloudStatus('connecting'); 
+            
             if(!state.ghOwner || !state.ghRepo || !state.ghToken) return;
 
             const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
             try {
                 const res = await fetch(url, {
@@ -281,8 +308,10 @@
                 document.getElementById('modal-cloud-config').classList.add('hidden');
             } catch (error) {
                 console.error(error);
-                const msg = error.name === 'AbortError' ? '请求超时 (10s)' : error.message;
-                showCloudError(msg);
+                // 只有非超时错误才弹窗提示，超时则静默失败
+                if (error.name !== 'AbortError') {
+                    showCloudError(error.message);
+                }
                 updateCloudStatus('error');
             } finally {
                 clearTimeout(timeoutId);
@@ -293,6 +322,7 @@
             if(!state.ghOwner || !state.ghRepo || !state.ghToken) return;
             updateCloudStatus('syncing');
             const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
+            
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -303,9 +333,7 @@
             const body = { message: `Update data`, content: content, sha: state.ghSha };
             
             try {
-                if (!state.ghSha) {
-                    try { const c = await fetch(url, {cache: 'no-store', headers:{'Authorization':`token ${state.ghToken}`}, signal: controller.signal}); if(c.ok){ const d=await c.json(); state.ghSha=d.sha; body.sha=d.sha; } } catch(e){}
-                }
+                if (!state.ghSha) { try { const c = await fetch(url, {cache: 'no-store', headers:{'Authorization':`token ${state.ghToken}`}, signal: controller.signal}); if(c.ok){ const d=await c.json(); state.ghSha=d.sha; body.sha=d.sha; } } catch(e){} }
                 const res = await fetch(url, { 
                     method: 'PUT', 
                     cache: 'no-store', 
@@ -316,7 +344,7 @@
                     body: JSON.stringify(body) 
                 });
                 
-                if (res.status === 409) { await pullFromGitHub(); return; }
+                if (res.status === 409) { await pullFromGitHub(5000); return; }
                 if (!res.ok) throw new Error(res.statusText);
                 const data = await res.json();
                 state.ghSha = data.content.sha;
@@ -326,7 +354,6 @@
                 updateCloudStatus('error'); 
             } finally {
                 clearTimeout(timeoutId);
-                // 重置状态
                 pendingSyncType = null;
             }
         }
@@ -334,8 +361,12 @@
         function updateCloudStatus(status) {
             const text = document.getElementById('cloud-text');
             const dot = document.getElementById('cloud-dot');
-            if (status === 'connecting') { text.innerText = '连接中...'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white animate-pulse"; }
-            else if (status === 'synced') { text.innerText = '已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
+            if (status === 'connecting') { 
+                // 只有手动连接时才改文字
+                if(text.innerText === 'GitHub 未连接' || text.innerText === '配置同步') text.innerText = '连接中...'; 
+                dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white animate-pulse"; 
+            }
+            else if (status === 'synced') { text.innerText = 'GitHub 已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
             else if (status === 'syncing') { text.innerText = '上传中...'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white animate-pulse"; }
             else { text.innerText = '未连接'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white"; }
         }
@@ -349,64 +380,32 @@
             state.ghRepo = repo;
             state.ghToken = document.getElementById('input-gh-token').value.trim();
             localStorage.setItem('ghOwner', state.ghOwner); localStorage.setItem('ghRepo', state.ghRepo); localStorage.setItem('ghToken', state.ghToken);
-            await pullFromGitHub();
+            await pullFromGitHub(5000); // 手动保存配置给 5s
         });
 
-        // 核心修改 (v11.0): 智能急慢分治策略
         window.recordClick = (index) => {
-            // 1. 快照：记录点击前的排序状态
             const oldOrder = state.shortcuts.map(s => s.url).join('|');
-
-            // 2. 更新数据
             const item = state.shortcuts[index];
             if (!item.clicks) item.clicks = 0;
             item.clicks++;
             sortShortcuts();
-
-            // 3. 判断：顺序是否变了？
             const newOrder = state.shortcuts.map(s => s.url).join('|');
-            const hasOrderChanged = oldOrder !== newOrder;
-
-            // 4. 本地立即生效
             localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
             renderShortcuts();
-
-            // 5. 智能同步
-            if (hasOrderChanged) {
-                // 排名变了 -> 急同步 (5秒)
-                saveState(5000);
-            } else {
-                // 排名没变 -> 慢同步 (60秒防抖)
-                // 这样可以把你连续的50次点击合并成1次网络请求
-                saveState(60000);
+            if (state.ghToken) {
+                if (window.pushTimeout) clearTimeout(window.pushTimeout);
+                if (oldOrder !== newOrder) saveState(5000); 
+                else saveState(60000); 
             }
         }
 
-        // 统一保存入口 (支持优先级判断)
-        // delay: 延迟毫秒数
         function saveState(delay = 2000) { 
             localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts)); 
             if (!state.ghToken) return;
-
-            // 判断本次请求的类型
             const type = delay <= 5000 ? 'fast' : 'slow';
-
-            // 如果已有等待中的任务
-            if (window.pushTimeout) {
-                // 如果当前等待的是"急"(fast)，而新来的是"慢"(slow)，则忽略慢的
-                // (因为急的任务马上就会把最新数据带上去)
-                if (pendingSyncType === 'fast' && type === 'slow') {
-                    return; 
-                }
-                // 否则(比如慢换慢，或者慢换急)，清除旧的，重新计时
-                clearTimeout(window.pushTimeout);
-            }
-
+            if (window.pushTimeout) { if (pendingSyncType === 'fast' && type === 'slow') return; clearTimeout(window.pushTimeout); }
             pendingSyncType = type;
-            window.pushTimeout = setTimeout(() => {
-                pushToGitHub();
-                window.pushTimeout = null;
-            }, delay); 
+            window.pushTimeout = setTimeout(() => { pushToGitHub(); window.pushTimeout = null; }, delay); 
         }
 
         function updateClock() { const now = new Date(); document.getElementById('clock-time').innerText = now.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'}); document.getElementById('date-display').innerText = now.toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'}); document.getElementById('greeting-text').innerText = GREETINGS[Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24) % GREETINGS.length]; }
@@ -437,10 +436,10 @@
                 if(link.customIcon) {
                     let finalSrc = link.customIcon;
                     if (!link.customIcon.startsWith('http') && !link.customIcon.startsWith('data:') && state.iconBaseUrl) { finalSrc = state.iconBaseUrl + link.customIcon; }
-                    iconContent = `<img src="${finalSrc}" class="w-full h-full object-contain rounded-full" onerror="this.src='https://via.placeholder.com/64?text=Error'">`;
+                    iconContent = `<img src="${finalSrc}" class="w-full h-full object-contain rounded-full" onerror="this.src='https://via.placeholder.com/64?text=Error'" loading="lazy">`;
                 } else {
                     const fav = getFaviconUrl(link.url); const char = (link.name||'L').charAt(0).toUpperCase(); const col = getAvatarColorClass(link.name||'L');
-                    iconContent = `<div class="relative w-full h-full flex items-center justify-center"><div id="fallback-${index}" class="absolute inset-0 flex items-center justify-center text-lg font-bold rounded-full ${col} transition-opacity duration-300">${char}</div><img src="${fav}" class="relative z-10 w-full h-full object-contain rounded-full opacity-0 transition-opacity duration-500" onload="this.style.opacity='1'; document.getElementById('fallback-${index}').style.opacity='0';" onerror="this.style.display='none'; document.getElementById('fallback-${index}').style.opacity='1';"></div>`;
+                    iconContent = `<div class="relative w-full h-full flex items-center justify-center"><div id="fallback-${index}" class="absolute inset-0 flex items-center justify-center text-lg font-bold rounded-full ${col} transition-opacity duration-300">${char}</div><img src="${fav}" class="relative z-10 w-full h-full object-contain rounded-full opacity-0 transition-opacity duration-500" onload="this.style.opacity='1'; document.getElementById('fallback-${index}').style.opacity='0';" onerror="this.style.display='none'; document.getElementById('fallback-${index}').style.opacity='1';" loading="lazy"></div>`;
                 }
                 
                 const clickAttr = state.isEditing ? `href="javascript:void(0)" onclick="window.openEditLinkModal(${index})"` : `href="${link.url}" target="_blank" onclick="window.recordClick(${index})"`;
