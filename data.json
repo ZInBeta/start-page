@@ -6,6 +6,12 @@
       "clicks": 1
     },
     {
+      "name": "抖音",
+      "url": "https://www.douyin.com/",
+      "customIcon": "douyin.png",
+      "clicks": 1
+    },
+    {
       "name": "Google",
       "url": "https://www.google.com/",
       "clicks": 0
@@ -18,12 +24,6 @@
     {
       "name": "GitHub",
       "url": "https://github.com/",
-      "clicks": 0
-    },
-    {
-      "name": "抖音",
-      "url": "https://www.douyin.com/",
-      "customIcon": "douyin.png",
       "clicks": 0
     },
     {
@@ -42,5 +42,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:09:07.755Z"
+  "updatedAt": "2026-01-07T06:09:10.650Z"
 }
