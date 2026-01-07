@@ -1,15 +1,15 @@
 {
   "shortcuts": [
     {
-      "name": "Gemini",
-      "url": "https://gemini.google.com/",
-      "customIcon": "gemini.png",
-      "clicks": 2
-    },
-    {
       "name": "哔哩哔哩",
       "url": "https://www.bilibili.com/",
       "customIcon": "bilibili.png",
+      "clicks": 3
+    },
+    {
+      "name": "Gemini",
+      "url": "https://gemini.google.com/",
+      "customIcon": "gemini.png",
       "clicks": 2
     },
     {
@@ -44,5 +44,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:40:48.946Z"
+  "updatedAt": "2026-01-07T06:40:55.028Z"
 }
