@@ -13,6 +13,12 @@
       "clicks": 2
     },
     {
+      "name": "抖音",
+      "url": "https://www.douyin.com/",
+      "customIcon": "douyin.png",
+      "clicks": 1
+    },
+    {
       "name": "ChatGPT",
       "url": "https://chat.openai.com/",
       "customIcon": "ChatGPT.png"
@@ -29,12 +35,6 @@
       "clicks": 0
     },
     {
-      "name": "抖音",
-      "url": "https://www.douyin.com/",
-      "customIcon": "douyin.png",
-      "clicks": 0
-    },
-    {
       "name": "斗鱼",
       "url": "https://www.douyu.com/",
       "customIcon": "douyu.png",
@@ -44,5 +44,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:45:28.287Z"
+  "updatedAt": "2026-01-07T06:46:11.318Z"
 }
