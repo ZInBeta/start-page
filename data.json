@@ -1,11 +1,6 @@
 {
   "shortcuts": [
     {
-      "name": "Bing",
-      "url": "https://www.bing.com/",
-      "clicks": 0
-    },
-    {
       "name": "Google",
       "url": "https://www.google.com/",
       "clicks": 0
@@ -28,6 +23,6 @@
   ],
   "financeLogs": [],
   "theme": "theme-light",
-  "iconBaseUrl": "",
-  "updatedAt": "2026-01-07T05:57:49.645Z"
+  "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
+  "updatedAt": "2026-01-07T06:00:42.211Z"
 }
