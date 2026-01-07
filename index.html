@@ -108,10 +108,10 @@
                 <div class="pt-3 border-t border-gray-200 dark:border-slate-700">
                     <label class="block text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">Github 图标仓库前缀 (Base URL)</label>
                     <div class="flex gap-2">
-                        <input id="input-base-url" type="text" placeholder="https://raw.githubusercontent.com/ZInBeta/start-page/main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
+                        <input id="input-base-url" type="text" placeholder="推荐: https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
                         <button onclick="window.saveBaseUrl(document.getElementById('input-base-url').value)" class="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold transition-colors">保存</button>
                     </div>
-                    <p class="text-[10px] text-gray-400 mt-1">设置后，添加图标时只需填写文件名 (如 bing.png)，系统会自动拼接。</p>
+                    <p class="text-[10px] text-gray-400 mt-1">💡 提示：国内请使用 <span class="font-mono bg-gray-100 dark:bg-slate-700 px-1 rounded">https://cdn.jsdelivr.net/gh/你的用户名/仓库名@main/图标路径/</span> 格式加速</p>
                 </div>
             </div>
         </div>
@@ -288,11 +288,6 @@
             if (state.firebaseConfig) { initFirebase(state.firebaseConfig); }
         }
 
-        // 移除：自动排序逻辑
-        // function sortShortcuts() {
-        //    state.shortcuts.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
-        // }
-
         // 修改：只记录点击，不排序
         window.recordClick = (index) => {
             // 确保 clicks 属性存在
@@ -430,11 +425,20 @@
             saveToCloud();
         }
 
+        // 核心修改：自动修复 BaseURL 缺少斜杠的问题
         window.saveBaseUrl = (url) => {
-            state.iconBaseUrl = url.trim();
+            let cleanUrl = url.trim();
+            // 如果链接不为空，且不是以 / 结尾，自动补上
+            if (cleanUrl && !cleanUrl.endsWith('/')) {
+                cleanUrl += '/';
+            }
+            state.iconBaseUrl = cleanUrl;
+            
             localStorage.setItem('myIconBaseUrl', state.iconBaseUrl);
+            document.getElementById('input-base-url').value = state.iconBaseUrl; // 回填修复后的 URL
+            
             saveToCloud();
-            alert("图标前缀已保存！\n现在添加图标时，可以直接填写文件名了 (例如: bing.png)。");
+            alert("图标前缀已保存！\n(已自动检测并修复路径格式)");
             renderShortcuts(); 
         }
 
