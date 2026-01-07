@@ -3,7 +3,7 @@
     {
       "name": "Gemini",
       "url": "https://gemini.google.com/",
-      "customIcon": null,
+      "customIcon": "gemini.png",
       "clicks": 2
     },
     {
@@ -30,6 +30,6 @@
   ],
   "financeLogs": [],
   "theme": "theme-light",
-  "iconBaseUrl": "",
-  "updatedAt": "2026-01-07T06:22:25.325Z"
+  "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
+  "updatedAt": "2026-01-07T06:33:16.969Z"
 }
