@@ -9,10 +9,6 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- 
-        核心修改：使用 Google Fonts 的国内镜像源 (fonts.loli.net)
-        这样在国内也能正常加载 Outfit 字体，不会回退到系统字体
-    -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +18,6 @@
             darkMode: 'class',
             theme: {
                 extend: {
-                    // 确保 Outfit 排在第一位
                     fontFamily: { sans: ['Outfit', 'system-ui', '-apple-system', 'sans-serif'] },
                     animation: { 'fade-in-down': 'fadeInDown 0.3s ease-out forwards', 'fade-in-up': 'fadeInUp 0.6s ease-out forwards' },
                     keyframes: {
@@ -44,7 +39,6 @@
         input[type="search"]::-webkit-search-results-decoration { display: none; }
         
         .dragging { opacity: 0.4; transform: scale(0.95); }
-        .favicon-img { object-fit: contain; }
 
         /* 主题定义 */
         .theme-light { @apply bg-gray-50 text-gray-800; }
@@ -54,7 +48,6 @@
         .theme-purple { @apply bg-gradient-to-br from-fuchsia-50 to-purple-100 text-purple-900 dark:from-slate-900 dark:to-purple-950 dark:text-slate-100; }
         .theme-warm { @apply bg-gradient-to-br from-orange-50 to-amber-100 text-orange-900 dark:from-slate-900 dark:to-orange-950 dark:text-slate-100; }
 
-        /* 智能头像背景色 */
         .avatar-bg-0 { @apply bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200; }
         .avatar-bg-1 { @apply bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-200; }
         .avatar-bg-2 { @apply bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-200; }
@@ -70,7 +63,6 @@
     <!-- 顶部导航 -->
     <header class="w-full px-6 py-4 flex flex-col z-20 relative">
         <div class="flex items-center justify-between w-full">
-            <!-- 左侧：云同步状态 -->
             <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel cursor-pointer hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all select-none group shadow-sm">
                 <div class="relative flex items-center justify-center">
                     <i data-lucide="cloud" class="w-4 h-4 opacity-70 group-hover:text-blue-500 transition-colors"></i>
@@ -79,7 +71,6 @@
                 <span id="cloud-text" class="text-xs font-bold opacity-80">未连接</span>
             </div>
 
-            <!-- 右侧：工具栏 -->
             <div class="flex items-center gap-3">
                 <div id="date-display" class="text-sm font-medium opacity-60 hidden md:block select-none"></div>
                 <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 dark:bg-slate-700/50 dark:hover:bg-slate-600 shadow-sm" title="设置 / 编辑布局">
@@ -88,28 +79,39 @@
             </div>
         </div>
 
-        <!-- 编辑模式控制台 -->
+        <!-- 编辑模式控制台 (已扩展) -->
         <div id="edit-panel" class="hidden w-full mt-4 animate-fade-in-down absolute top-14 left-0 px-4 z-30">
-            <div class="glass-panel rounded-2xl p-4 border shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg mx-auto backdrop-blur-xl">
-                <!-- 风格选择 -->
-                <div class="flex items-center gap-3">
-                    <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest shrink-0">风格</span>
-                    <div class="flex gap-2">
-                        <button onclick="changeTheme('theme-light')" class="w-5 h-5 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="雅白"></button>
-                        <button onclick="changeTheme('theme-dark')" class="w-5 h-5 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="深邃"></button>
-                        <button onclick="changeTheme('theme-blue')" class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="极光"></button>
-                        <button onclick="changeTheme('theme-green')" class="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="森系"></button>
-                        <button onclick="changeTheme('theme-purple')" class="w-5 h-5 rounded-full bg-gradient-to-br from-fuchsia-300 to-purple-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="梦幻"></button>
-                        <button onclick="changeTheme('theme-warm')" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="暖阳"></button>
+            <div class="glass-panel rounded-2xl p-4 border shadow-xl flex flex-col gap-4 max-w-lg mx-auto backdrop-blur-xl">
+                <!-- 第一行：风格 & 操作 -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-[10px] font-bold opacity-50 uppercase tracking-widest shrink-0">风格</span>
+                        <div class="flex gap-2">
+                            <button onclick="changeTheme('theme-light')" class="w-5 h-5 rounded-full border border-gray-300 bg-gray-50 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="雅白"></button>
+                            <button onclick="changeTheme('theme-dark')" class="w-5 h-5 rounded-full border border-slate-600 bg-slate-900 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="深邃"></button>
+                            <button onclick="changeTheme('theme-blue')" class="w-5 h-5 rounded-full bg-gradient-to-br from-blue-300 to-indigo-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="极光"></button>
+                            <button onclick="changeTheme('theme-green')" class="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-300 to-teal-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="森系"></button>
+                            <button onclick="changeTheme('theme-purple')" class="w-5 h-5 rounded-full bg-gradient-to-br from-fuchsia-300 to-purple-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="梦幻"></button>
+                            <button onclick="changeTheme('theme-warm')" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="暖阳"></button>
+                        </div>
+                    </div>
+                    <div class="w-full h-px bg-gray-400/20 sm:w-px sm:h-6 hidden sm:block"></div>
+                    <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+                        <button onclick="resetData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300 whitespace-nowrap">重置</button>
+                        <button id="btn-done" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-1.5 whitespace-nowrap">
+                            <i data-lucide="check" class="w-3.5 h-3.5"></i> 完成
+                        </button>
                     </div>
                 </div>
-                <div class="w-full h-px bg-gray-400/20 sm:w-px sm:h-6"></div>
-                <!-- 操作按钮 -->
-                <div class="flex items-center gap-3">
-                    <button onclick="resetData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300">重置</button>
-                    <button id="btn-done" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-1.5">
-                        <i data-lucide="check" class="w-3.5 h-3.5"></i> 完成
-                    </button>
+
+                <!-- 第二行：图标仓库设置 -->
+                <div class="pt-3 border-t border-gray-200 dark:border-slate-700">
+                    <label class="block text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">Github 图标仓库前缀 (Base URL)</label>
+                    <div class="flex gap-2">
+                        <input id="input-base-url" type="text" placeholder="https://raw.githubusercontent.com/ZInBeta/start-page/main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
+                        <button onclick="window.saveBaseUrl(document.getElementById('input-base-url').value)" class="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold transition-colors">保存</button>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1">设置后，添加图标时只需填写文件名 (如 bing.png)，系统会自动拼接。</p>
                 </div>
             </div>
         </div>
@@ -118,13 +120,11 @@
     <!-- 主体内容 -->
     <main id="main-container" class="flex-1 container mx-auto px-4 flex flex-col justify-center items-center max-w-6xl py-10 transition-all duration-300">
         
-        <!-- 欢迎语 & 时钟 -->
         <div id="greeting-section" class="text-center mb-12 animate-fade-in-up">
             <h1 id="clock-time" class="text-7xl md:text-9xl font-semibold tracking-tight mb-2 tabular-nums cursor-default select-none opacity-90">00:00</h1>
             <p id="greeting-text" class="text-lg md:text-xl font-normal opacity-60">Loading...</p>
         </div>
 
-        <!-- 搜索框 -->
         <div id="search-container" class="w-full max-w-2xl mb-12 relative group z-10 transition-all duration-300">
             <form id="search-form" class="relative">
                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none opacity-40">
@@ -145,7 +145,6 @@
             </form>
         </div>
 
-        <!-- 链接网格 -->
         <div id="shortcuts-container" class="w-full grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-8 gap-x-4 gap-y-6 justify-items-center animate-fade-in-up pb-20" style="animation-delay: 0.1s;">
             <!-- JS 生成 -->
         </div>
@@ -158,7 +157,7 @@
     <!-- 弹窗：添加/编辑链接 -->
     <div id="modal-add-link" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up p-6">
-            <h3 class="text-xl font-bold mb-4 dark:text-white">添加快捷方式</h3>
+            <h3 id="modal-title" class="text-xl font-bold mb-4 dark:text-white">添加快捷方式</h3>
             <form id="form-add-link" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-400 mb-1">名称</label>
@@ -168,19 +167,42 @@
                     <label class="block text-xs font-bold uppercase text-gray-400 mb-1">网址</label>
                     <input id="input-link-url" type="text" placeholder="github.com" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-transparent focus:bg-white dark:focus:bg-slate-600 border focus:border-blue-500 outline-none transition-all dark:text-white" required>
                 </div>
-                <!-- 离线图标上传 -->
-                <div>
-                    <label class="block text-sm font-medium mb-1 dark:text-slate-300">自定义图标 (支持离线)</label>
+                
+                <!-- 自定义图标区域 -->
+                <div class="p-3 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-600">
+                    <label class="block text-sm font-medium mb-3 dark:text-slate-300">自定义图标</label>
+                    
+                    <!-- 方式一：图片链接 -->
+                    <div class="mb-3">
+                        <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">方式A：图标文件名 或 完整链接</label>
+                        <input id="input-icon-url" type="text" placeholder="例如: bing.png (如果设置了前缀)" class="w-full p-2 text-xs rounded-lg border border-gray-200 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:border-blue-500 outline-none font-mono" oninput="window.handleUrlInput(this.value)">
+                        <p class="text-[10px] text-blue-500 mt-1 hidden" id="base-url-hint">已启用前缀拼接，可直接输入文件名。</p>
+                    </div>
+
+                    <div class="flex items-center gap-2 mb-2 text-[10px] text-gray-400 uppercase font-bold text-center">
+                        <div class="h-px bg-gray-200 dark:bg-slate-600 flex-1"></div>
+                        <span>OR</span>
+                        <div class="h-px bg-gray-200 dark:bg-slate-600 flex-1"></div>
+                    </div>
+
+                    <!-- 方式二：本地上传 -->
                     <div class="flex items-center gap-3">
-                        <label class="cursor-pointer flex items-center gap-2 px-3 py-2 bg-gray-100 dark:bg-slate-700 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+                        <label class="cursor-pointer flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white dark:bg-slate-600 border border-gray-200 dark:border-slate-500 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-500 transition-colors">
                             <i data-lucide="upload" class="w-4 h-4 text-gray-500 dark:text-gray-300"></i>
-                            <span class="text-xs text-gray-600 dark:text-gray-300">选择图片</span>
+                            <span class="text-xs text-gray-600 dark:text-gray-300">方式B：上传本地图片 (转Base64)</span>
                             <input type="file" id="input-link-icon-file" class="hidden" accept="image/*" onchange="window.handleIconUpload(event)">
                         </label>
-                        <span id="upload-status" class="text-xs text-gray-400 truncate max-w-[150px]">未选择</span>
-                        <div id="preview-icon" class="w-8 h-8 rounded-full border bg-gray-50 overflow-hidden hidden"><img src="" class="w-full h-full object-contain"></div>
+                    </div>
+
+                    <!-- 预览区 -->
+                    <div class="mt-3 flex items-center gap-3">
+                        <div id="preview-icon" class="w-10 h-10 rounded-full border bg-white overflow-hidden hidden shrink-0 shadow-sm">
+                            <img src="" class="w-full h-full object-contain">
+                        </div>
+                        <span id="upload-status" class="text-xs text-gray-400 truncate">未选择图标 (默认使用 Google 图标)</span>
                     </div>
                 </div>
+
                 <div class="flex gap-3 mt-6">
                     <button type="button" id="btn-cancel-add" class="flex-1 py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">取消</button>
                     <button type="submit" class="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-500/30 transition-transform active:scale-95">保存</button>
@@ -233,22 +255,19 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const DEFAULT_SHORTCUTS = [
-            { name: 'Bing', url: 'https://www.bing.com/' }, { name: 'Google', url: 'https://www.google.com/' },
-            { name: 'ChatGPT', url: 'https://chat.openai.com/' }, { name: 'GitHub', url: 'https://github.com/' },
-            { name: 'Bilibili', url: 'https://www.bilibili.com/' },
+            { name: 'Bing', url: 'https://www.bing.com/', clicks: 0 }, { name: 'Google', url: 'https://www.google.com/', clicks: 0 },
+            { name: 'ChatGPT', url: 'https://chat.openai.com/', clicks: 0 }, { name: 'GitHub', url: 'https://github.com/', clicks: 0 },
+            { name: 'Bilibili', url: 'https://www.bilibili.com/', clicks: 0 },
         ];
-        const GREETINGS = ["Do what you can, with what you have, where you are.",
-  "Progress, not perfection.",
-  "Small steps, big changes.",
-  "The harder you work, the luckier you get.",
-  "Challenges are what make life interesting and overcoming them is what makes life meaningful.",
-  "Believe you can and you're halfway there."];
+        const GREETINGS = ["Do what you can, with what you have, where you are.", "Progress, not perfection.", "Small steps, big changes.", "The harder you work, the luckier you get.", "Challenges are what make life interesting and overcoming them is what makes life meaningful.", "Believe you can and you're halfway there."];
 
         let state = {
             shortcuts: JSON.parse(localStorage.getItem('myShortcuts')) || DEFAULT_SHORTCUTS,
             isEditing: false,
+            editingIndex: null,
             searchEngine: 'bing',
             theme: localStorage.getItem('myTheme') || 'theme-light',
+            iconBaseUrl: localStorage.getItem('myIconBaseUrl') || '', 
             financeLogs: JSON.parse(localStorage.getItem('myFinanceLogs')) || [],
             tempIconBase64: null,
             firebaseConfig: JSON.parse(localStorage.getItem('myFirebaseConfig')) || null,
@@ -257,6 +276,8 @@
 
         function init() {
             applyTheme(state.theme);
+            document.getElementById('input-base-url').value = state.iconBaseUrl; 
+            // sortShortcuts(); // 移除：由用户拖拽决定顺序
             renderShortcuts();
             updateEngineUI();
             updateClock(); setInterval(updateClock, 1000);
@@ -265,6 +286,26 @@
             document.getElementById('search-input').addEventListener('keydown', (e) => { if(e.key === 'Tab'){ e.preventDefault(); state.searchEngine = state.searchEngine==='bing'?'google':'bing'; updateEngineUI(); } });
 
             if (state.firebaseConfig) { initFirebase(state.firebaseConfig); }
+        }
+
+        // 移除：自动排序逻辑
+        // function sortShortcuts() {
+        //    state.shortcuts.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
+        // }
+
+        // 修改：只记录点击，不排序
+        window.recordClick = (index) => {
+            // 确保 clicks 属性存在
+            if (!state.shortcuts[index].clicks) state.shortcuts[index].clicks = 0;
+            
+            // 增加点击数
+            state.shortcuts[index].clicks++;
+            
+            // 不再调用 sortShortcuts()
+            
+            // 保存
+            saveState();
+            // 不需要重新 renderShortcuts，避免页面闪烁
         }
 
         async function initFirebase(config) {
@@ -285,6 +326,13 @@
                         if(JSON.stringify(data.shortcuts) !== JSON.stringify(state.shortcuts)) {
                             state.shortcuts = data.shortcuts || [];
                             localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
+                            // sortShortcuts(); // 移除同步后排序
+                            needRender = true;
+                        }
+                        if(data.iconBaseUrl && data.iconBaseUrl !== state.iconBaseUrl) {
+                            state.iconBaseUrl = data.iconBaseUrl;
+                            localStorage.setItem('myIconBaseUrl', state.iconBaseUrl);
+                            document.getElementById('input-base-url').value = state.iconBaseUrl;
                             needRender = true;
                         }
                         if(JSON.stringify(data.financeLogs) !== JSON.stringify(state.financeLogs)) {
@@ -329,6 +377,7 @@
                     shortcuts: state.shortcuts,
                     financeLogs: state.financeLogs,
                     theme: state.theme,
+                    iconBaseUrl: state.iconBaseUrl, 
                     updatedAt: new Date().toISOString()
                 });
                 updateCloudStatus('synced');
@@ -381,6 +430,14 @@
             saveToCloud();
         }
 
+        window.saveBaseUrl = (url) => {
+            state.iconBaseUrl = url.trim();
+            localStorage.setItem('myIconBaseUrl', state.iconBaseUrl);
+            saveToCloud();
+            alert("图标前缀已保存！\n现在添加图标时，可以直接填写文件名了 (例如: bing.png)。");
+            renderShortcuts(); 
+        }
+
         function applyTheme(themeName) {
             const body = document.getElementById('app-body');
             body.className = `min-h-screen font-sans overflow-x-hidden flex flex-col ${themeName}`;
@@ -392,7 +449,94 @@
         window.openFinanceModal = () => { document.getElementById('modal-finance').classList.remove('hidden'); const l=state.financeLogs; const last=l.length>0?l[l.length-1]:{balance:0}; document.getElementById('modal-finance-balance').innerText='¥ '+parseFloat(last.balance).toLocaleString(); document.getElementById('input-balance').focus(); };
         window.closeFinanceModal = () => document.getElementById('modal-finance').classList.add('hidden');
         window.deleteLink = (i) => { if(confirm("确定删除?")) { state.shortcuts.splice(i,1); saveState(); renderShortcuts(); } };
-        window.handleIconUpload = (e) => { const f=e.target.files[0]; if(!f)return; if(f.size>200*1024){alert("图片需小于200KB");return;} const r=new FileReader(); r.onload=(ev)=>{ state.tempIconBase64=ev.target.result; document.getElementById('preview-icon').classList.remove('hidden'); document.getElementById('preview-icon').querySelector('img').src=state.tempIconBase64; document.getElementById('upload-status').innerText="已选择"; }; r.readAsDataURL(f); };
+        
+        window.openEditLinkModal = (i) => {
+            state.editingIndex = i;
+            const link = state.shortcuts[i];
+            
+            document.getElementById('modal-title').innerText = "编辑快捷方式";
+            document.getElementById('modal-add-link').classList.remove('hidden');
+            
+            document.getElementById('input-link-name').value = link.name;
+            document.getElementById('input-link-url').value = link.url;
+            
+            const previewDiv = document.getElementById('preview-icon');
+            const statusText = document.getElementById('upload-status');
+            const urlInput = document.getElementById('input-icon-url');
+            
+            urlInput.value = '';
+            document.getElementById('input-link-icon-file').value = '';
+            
+            const hint = document.getElementById('base-url-hint');
+            if(state.iconBaseUrl) hint.classList.remove('hidden'); else hint.classList.add('hidden');
+
+            if (link.customIcon) {
+                state.tempIconBase64 = link.customIcon;
+                previewDiv.classList.remove('hidden');
+                
+                let displaySrc = link.customIcon;
+                if (!link.customIcon.startsWith('data:') && !link.customIcon.startsWith('http') && state.iconBaseUrl) {
+                    displaySrc = state.iconBaseUrl + link.customIcon;
+                    urlInput.value = link.customIcon; 
+                    statusText.innerText = "已使用仓库文件名";
+                } else if (link.customIcon.startsWith('http')) {
+                    urlInput.value = link.customIcon;
+                    statusText.innerText = "已使用网络图片";
+                } else {
+                    statusText.innerText = "已使用本地上传图片";
+                }
+                previewDiv.querySelector('img').src = displaySrc;
+            } else {
+                state.tempIconBase64 = null;
+                previewDiv.classList.add('hidden');
+                statusText.innerText = "未选择图标 (默认使用 Google 图标)";
+            }
+        };
+
+        window.handleUrlInput = (val) => {
+            const previewDiv = document.getElementById('preview-icon');
+            const statusText = document.getElementById('upload-status');
+            
+            let fullUrl = val;
+            
+            if (val && !val.startsWith('http') && !val.startsWith('data:') && state.iconBaseUrl) {
+                fullUrl = state.iconBaseUrl + val;
+                statusText.innerText = "预览仓库文件 (自动拼接前缀)";
+            } else if (val && val.startsWith('http')) {
+                statusText.innerText = "预览网络图片";
+            }
+
+            if (val) {
+                state.tempIconBase64 = val; 
+                previewDiv.classList.remove('hidden');
+                previewDiv.querySelector('img').src = fullUrl;
+                previewDiv.querySelector('img').onerror = () => { statusText.innerText = "预览失败：无法加载图片"; };
+            } else if (!val && !document.getElementById('input-link-icon-file').value) {
+                previewDiv.classList.add('hidden');
+                statusText.innerText = "未选择图标";
+                state.tempIconBase64 = null;
+            }
+        };
+
+        window.handleIconUpload = (e) => { 
+            const f=e.target.files[0]; 
+            const urlInput = document.getElementById('input-icon-url');
+            
+            if(!f) return; 
+            if(f.size>500*1024){alert("图片需小于500KB，以免拖慢加载");return;} 
+            
+            urlInput.value = '';
+            
+            const r=new FileReader(); 
+            r.onload=(ev)=>{ 
+                state.tempIconBase64=ev.target.result; 
+                document.getElementById('preview-icon').classList.remove('hidden'); 
+                document.getElementById('preview-icon').querySelector('img').src=state.tempIconBase64; 
+                document.getElementById('upload-status').innerText="已选择本地图片"; 
+            }; 
+            r.readAsDataURL(f); 
+        };
+        
         window.resetData = () => { if(confirm("重置所有数据？")) { localStorage.clear(); location.reload(); } };
 
         function toggleEditMode() {
@@ -413,9 +557,12 @@
             renderShortcuts();
         }
 
-        // 渲染
         let dragSrcIndex = null;
-        function getFaviconUrl(url) { return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`; }
+        
+        function getFaviconUrl(url) { 
+            return `https://www.google.com/s2/favicons?domain_url=${encodeURIComponent(url)}&sz=128`; 
+        }
+        
         function getAvatarColorClass(name) { let h=0; for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h); return `avatar-bg-${Math.abs(h)%8}`; }
 
         function renderShortcuts() {
@@ -423,19 +570,83 @@
             state.shortcuts.forEach((link, index) => {
                 const item = document.createElement('div');
                 item.className = `relative group flex flex-col items-center gap-2 p-3 rounded-xl transition-all hover:bg-black/5 dark:hover:bg-white/10 ${state.isEditing ? 'cursor-move bg-black/5 dark:bg-white/5 border border-dashed border-gray-300 dark:border-gray-600' : ''}`;
+                
                 if(state.isEditing){ item.draggable=true; item.ondragstart=(e)=>{dragSrcIndex=index;e.target.classList.add('dragging');}; item.ondragover=(e)=>e.preventDefault(); item.ondrop=(e)=>{const d=state.shortcuts[dragSrcIndex];state.shortcuts.splice(dragSrcIndex,1);state.shortcuts.splice(index,0,d);saveState();renderShortcuts();}; }
                 
                 let iconContent;
-                if(link.customIcon) iconContent = `<img src="${link.customIcon}" class="w-full h-full object-contain rounded-full">`;
-                else {
-                    const fav = getFaviconUrl(link.url); const char = (link.name||'L').charAt(0).toUpperCase(); const col = getAvatarColorClass(link.name||'L');
-                    iconContent = `<img src="${fav}" class="w-full h-full object-contain favicon-img transition-opacity duration-300" onload="this.style.opacity=1" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden')"><div class="w-full h-full hidden items-center justify-center text-lg font-bold rounded-full ${col} flex">${char}</div>`;
+                if(link.customIcon) {
+                    let finalSrc = link.customIcon;
+                    if (!link.customIcon.startsWith('http') && !link.customIcon.startsWith('data:') && state.iconBaseUrl) {
+                        finalSrc = state.iconBaseUrl + link.customIcon;
+                    }
+                    iconContent = `<img src="${finalSrc}" class="w-full h-full object-contain rounded-full" onerror="this.src='https://via.placeholder.com/64?text=Error'">`;
+                } else {
+                    const fav = getFaviconUrl(link.url); 
+                    const char = (link.name||'L').charAt(0).toUpperCase(); 
+                    const col = getAvatarColorClass(link.name||'L');
+                    
+                    iconContent = `
+                        <div class="relative w-full h-full flex items-center justify-center">
+                            <div id="fallback-${index}" class="absolute inset-0 flex items-center justify-center text-lg font-bold rounded-full ${col} transition-opacity duration-300">
+                                ${char}
+                            </div>
+                            <img src="${fav}" 
+                                 class="relative z-10 w-full h-full object-contain rounded-full opacity-0 transition-opacity duration-500" 
+                                 onload="this.style.opacity='1'; document.getElementById('fallback-${index}').style.opacity='0';" 
+                                 onerror="this.style.display='none'; document.getElementById('fallback-${index}').style.opacity='1';"
+                            >
+                        </div>
+                    `;
                 }
-                item.innerHTML = `<a href="${state.isEditing?'javascript:void(0)':link.url}" target="_blank" class="flex flex-col items-center gap-3 w-full ${state.isEditing?'pointer-events-none':''}"><div class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 shadow-sm p-2 flex items-center justify-center overflow-hidden shortcut-icon-bg transition-transform group-hover:scale-105">${iconContent}</div><span class="text-xs font-medium opacity-80 w-24 text-center truncate dark:text-gray-300">${link.name}</span></a>${state.isEditing?`<button onclick="window.deleteLink(${index})" class="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full shadow-sm hover:scale-110 transition-transform"><i data-lucide="x" class="w-3 h-3"></i></button>`:''}`;
+                
+                // 核心：点击属性区分 - 正常模式下触发 recordClick
+                const clickAttr = state.isEditing 
+                    ? `href="javascript:void(0)" onclick="event.preventDefault(); window.openEditLinkModal(${index})"` 
+                    : `href="${link.url}" target="_blank" onclick="window.recordClick(${index})"`;
+
+                const itemClass = `flex flex-col items-center gap-3 w-full select-none`;
+
+                const editButtons = state.isEditing ? `
+                    <div class="absolute -top-3 -right-3 flex gap-1 z-20">
+                        <button onclick="window.openEditLinkModal(${index})" class="bg-blue-600 text-white p-1.5 rounded-full shadow-md hover:scale-110 transition-transform ring-2 ring-white dark:ring-slate-800" title="编辑"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                        <button onclick="window.deleteLink(${index})" class="bg-red-500 text-white p-1.5 rounded-full shadow-md hover:scale-110 transition-transform ring-2 ring-white dark:ring-slate-800" title="删除"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                ` : '';
+                
+                // 核心：在编辑模式下显示点击次数
+                const clickCountBadge = state.isEditing 
+                    ? `<div class="absolute -bottom-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 text-[10px] font-bold rounded-full border border-yellow-200 dark:bg-yellow-900/50 dark:text-yellow-200 dark:border-yellow-800 shadow-sm z-10 flex items-center gap-0.5"><i data-lucide="flame" class="w-3 h-3"></i> ${link.clicks||0}</div>` 
+                    : '';
+
+                item.innerHTML = `
+                    <a ${clickAttr} class="${itemClass}">
+                        <div class="w-14 h-14 rounded-2xl bg-white dark:bg-slate-800 shadow-sm p-2 flex items-center justify-center overflow-hidden shortcut-icon-bg transition-transform group-hover:scale-105 relative">
+                            ${iconContent}
+                            ${state.isEditing ? '<div class="absolute inset-0 bg-black/10 dark:bg-white/10 flex items-center justify-center"><i data-lucide="pencil" class="w-5 h-5 text-white drop-shadow-md opacity-80"></i></div>' : ''}
+                        </div>
+                        <span class="text-xs font-medium opacity-80 w-24 text-center truncate dark:text-gray-300">${link.name}</span>
+                        ${clickCountBadge}
+                    </a>
+                    ${editButtons}
+                `;
                 container.appendChild(item);
             });
+            
             if(state.isEditing){
-                const addBtn = document.createElement('div'); addBtn.className="flex flex-col items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 opacity-60 hover:opacity-100 transition-opacity"; addBtn.onclick=()=>{document.getElementById('modal-add-link').classList.remove('hidden'); state.tempIconBase64=null; document.getElementById('input-link-name').value=''; document.getElementById('input-link-url').value=''; document.getElementById('preview-icon').classList.add('hidden'); document.getElementById('upload-status').innerText='未选择';};
+                const addBtn = document.createElement('div'); addBtn.className="flex flex-col items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-black/5 dark:hover:bg-white/10 opacity-60 hover:opacity-100 transition-opacity"; 
+                addBtn.onclick=()=>{
+                    state.editingIndex = null; 
+                    document.getElementById('modal-title').innerText = "添加快捷方式";
+                    document.getElementById('modal-add-link').classList.remove('hidden'); 
+                    state.tempIconBase64=null; 
+                    document.getElementById('input-link-name').value=''; 
+                    document.getElementById('input-link-url').value=''; 
+                    document.getElementById('input-icon-url').value='';
+                    document.getElementById('preview-icon').classList.add('hidden'); 
+                    document.getElementById('upload-status').innerText='未选择图标 (默认使用 Google 图标)';
+                    const hint = document.getElementById('base-url-hint');
+                    if(state.iconBaseUrl) hint.classList.remove('hidden'); else hint.classList.add('hidden');
+                };
                 addBtn.innerHTML=`<div class="w-14 h-14 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center"><i data-lucide="plus" class="w-6 h-6 dark:text-gray-400"></i></div><span class="text-xs font-medium dark:text-gray-400">添加</span>`; container.appendChild(addBtn);
             }
             lucide.createIcons();
@@ -444,7 +655,32 @@
         document.getElementById('btn-edit').onclick = toggleEditMode;
         document.getElementById('btn-done').onclick = toggleEditMode;
         document.getElementById('btn-cancel-add').onclick = () => document.getElementById('modal-add-link').classList.add('hidden');
-        document.getElementById('form-add-link').onsubmit = (e) => { e.preventDefault(); const n = document.getElementById('input-link-name').value; let u = document.getElementById('input-link-url').value; if(n&&u){ if(!u.startsWith('http'))u='https://'+u; state.shortcuts.push({name:n, url:u, customIcon:state.tempIconBase64}); saveState(); renderShortcuts(); document.getElementById('modal-add-link').classList.add('hidden'); } };
+        
+        document.getElementById('form-add-link').onsubmit = (e) => { 
+            e.preventDefault(); 
+            const n = document.getElementById('input-link-name').value; 
+            let u = document.getElementById('input-link-url').value; 
+            
+            if(n && u){ 
+                if(!u.startsWith('http')) u='https://'+u; 
+                
+                const newLinkData = { name:n, url:u, customIcon: state.tempIconBase64, clicks: 0 };
+                
+                if (state.editingIndex !== null) {
+                    // 保留原有点击数
+                    newLinkData.clicks = state.shortcuts[state.editingIndex].clicks || 0;
+                    state.shortcuts[state.editingIndex] = newLinkData;
+                } else {
+                    state.shortcuts.push(newLinkData); 
+                }
+                
+                // sortShortcuts(); // 移除：添加后也不排序
+                saveState(); 
+                renderShortcuts(); 
+                document.getElementById('modal-add-link').classList.add('hidden'); 
+            } 
+        };
+        
         document.getElementById('search-form').onsubmit = (e) => { e.preventDefault(); const t=document.getElementById('search-input').value.trim(); if(t) window.location.href=(state.searchEngine==='bing'?'https://www.bing.com/search?q=':'https://www.google.com/search?q=')+encodeURIComponent(t); };
         document.getElementById('form-finance').onsubmit = (e) => { e.preventDefault(); const v=parseFloat(document.getElementById('input-balance').value); if(!isNaN(v)){ state.financeLogs.push({date:new Date().toISOString(), balance:v}); saveFinance(); saveToCloud(); window.openFinanceModal(); } };
         function updateEngineUI() { const btns=document.querySelectorAll('.engine-btn'); btns.forEach(b=>{ const sel=b.dataset.engine===state.searchEngine; b.className=`engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all ${sel?'bg-black text-white dark:bg-white dark:text-black shadow-md':'text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300'}`; }); document.getElementById('search-input').placeholder=`Search ${state.searchEngine==='bing'?'Bing':'Google'}...`; }
@@ -455,4 +691,3 @@
     </script>
 </body>
 </html>
-
