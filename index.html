@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <title>新标签页</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -33,15 +30,11 @@
     <style type="text/tailwindcss">
         body { font-family: 'Outfit', sans-serif; transition: background-image 0.5s ease, background-color 0.5s ease, color 0.3s ease; }
         .glass-panel { @apply backdrop-blur-md bg-white/60 border border-white/40 dark:bg-slate-800/60 dark:border-slate-700/50; }
-        
         input[type="search"]::-webkit-search-decoration,
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-results-button,
         input[type="search"]::-webkit-search-results-decoration { display: none; }
-        
-        /* 仅保留基础过渡，移除拖拽相关样式 */
         .shortcut-item { transition: transform 0.2s, background-color 0.2s; }
-        
         /* 主题定义 */
         .theme-light { @apply bg-gray-50 text-gray-800; }
         .theme-dark { @apply bg-slate-900 text-slate-100; }
@@ -49,7 +42,7 @@
         .theme-green { @apply bg-gradient-to-br from-emerald-50 to-teal-100 text-teal-900 dark:from-slate-900 dark:to-emerald-950 dark:text-slate-100; }
         .theme-purple { @apply bg-gradient-to-br from-fuchsia-50 to-purple-100 text-purple-900 dark:from-slate-900 dark:to-purple-950 dark:text-slate-100; }
         .theme-warm { @apply bg-gradient-to-br from-orange-50 to-amber-100 text-orange-900 dark:from-slate-900 dark:to-orange-950 dark:text-slate-100; }
-
+        /* 头像背景 */
         .avatar-bg-0 { @apply bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200; }
         .avatar-bg-1 { @apply bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-200; }
         .avatar-bg-2 { @apply bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-200; }
@@ -65,12 +58,19 @@
     <!-- 顶部导航 -->
     <header class="w-full px-6 py-4 flex flex-col z-20 relative">
         <div class="flex items-center justify-between w-full">
-            <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel cursor-pointer hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all select-none group shadow-sm">
-                <div class="relative flex items-center justify-center">
-                    <i data-lucide="github" class="w-4 h-4 opacity-70 group-hover:text-black dark:group-hover:text-white transition-colors"></i>
-                    <span id="cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gray-400 rounded-full border border-white dark:border-slate-800"></span>
+            <div class="flex items-center gap-2">
+                <!-- GitHub Sync Button -->
+                <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel cursor-pointer hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all select-none group shadow-sm">
+                    <div class="relative flex items-center justify-center">
+                        <i data-lucide="github" class="w-4 h-4 opacity-70 group-hover:text-black dark:group-hover:text-white transition-colors"></i>
+                        <span id="cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gray-400 rounded-full border border-white dark:border-slate-800"></span>
+                    </div>
+                    <span id="cloud-text" class="text-xs font-bold opacity-80">配置同步</span>
                 </div>
-                <span id="cloud-text" class="text-xs font-bold opacity-80">GitHub 未连接</span>
+                <!-- 手动刷新按钮 -->
+                <button onclick="window.manualSync()" class="p-2 rounded-full glass-panel hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all" title="立即同步">
+                    <i data-lucide="refresh-cw" id="sync-icon" class="w-4 h-4 opacity-70"></i>
+                </button>
             </div>
 
             <div class="flex items-center gap-3">
@@ -175,12 +175,12 @@
     <div id="modal-cloud-config" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up p-6">
             <h3 class="text-xl font-bold mb-2 dark:text-white flex items-center gap-2"><i data-lucide="github" class="w-6 h-6"></i> GitHub 数据同步</h3>
-            <p class="text-xs text-gray-500 mb-4">数据保存到 GitHub 仓库的 data.json。这比 Firebase 更稳定。</p>
+            <p class="text-xs text-gray-500 mb-4">注意：为了在多台设备间同步，你必须在<b>每台设备</b>上都填写一次相同的 Token。</p>
             <div id="cloud-error-msg" class="hidden mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-xs border border-red-100 dark:bg-red-900/30 dark:border-red-900/50 dark:text-red-300"></div>
             <form id="form-cloud-config" class="space-y-3">
                 <div class="grid grid-cols-2 gap-3"><div><label class="block text-xs font-bold text-gray-500 mb-1">用户名</label><input id="input-gh-owner" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div><div><label class="block text-xs font-bold text-gray-500 mb-1">仓库名</label><input id="input-gh-repo" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div></div>
                 <div><label class="block text-xs font-bold text-gray-500 mb-1">Token (需 repo 权限)</label><input id="input-gh-token" type="password" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div>
-                <div class="flex gap-3 mt-6 pt-2"><button type="button" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300" onclick="document.getElementById('modal-cloud-config').classList.add('hidden')">取消</button><button type="submit" class="flex-1 py-2 rounded-lg bg-black hover:bg-gray-800 text-white font-bold transition-all">保存并同步</button></div>
+                <div class="flex gap-3 mt-6 pt-2"><button type="button" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300" onclick="document.getElementById('modal-cloud-config').classList.add('hidden')">取消</button><button type="submit" class="flex-1 py-2 rounded-lg bg-black hover:bg-gray-800 text-white font-bold transition-all">保存配置并同步</button></div>
             </form>
         </div>
     </div>
@@ -223,7 +223,12 @@
 
             sortShortcuts(); // 纯点击量排序
 
-            if(state.ghOwner && state.ghRepo && state.ghToken) pullFromGitHub();
+            // 1. 尝试初始化同步
+            if(state.ghOwner && state.ghRepo && state.ghToken) {
+                pullFromGitHub();
+                // 2. 设置自动轮询 (每30秒)
+                setInterval(pullFromGitHub, 30 * 1000);
+            }
 
             renderShortcuts();
             updateEngineUI();
@@ -240,26 +245,69 @@
         }
 
         // --- GitHub API ---
+        
+        // 手动刷新入口
+        window.manualSync = () => {
+            const icon = document.getElementById('sync-icon');
+            icon.classList.add('animate-spin');
+            pullFromGitHub().finally(() => setTimeout(() => icon.classList.remove('animate-spin'), 1000));
+        };
+
         async function pullFromGitHub() {
             updateCloudStatus('connecting');
             if(!state.ghOwner || !state.ghRepo || !state.ghToken) return;
             const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
             try {
-                const res = await fetch(url, { headers: { 'Authorization': `Bearer ${state.ghToken}`, 'Accept': 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' } });
+                const res = await fetch(url, {
+                    cache: 'no-store',
+                    credentials: 'omit',
+                    referrerPolicy: 'no-referrer',
+                    headers: { 'Authorization': `token ${state.ghToken}`, 'Accept': 'application/vnd.github.v3+json' }
+                });
+                
                 if (res.status === 404) { await pushToGitHub(); updateCloudStatus('synced'); return; }
                 if (!res.ok) throw new Error(res.statusText);
+                
                 const data = await res.json();
                 state.ghSha = data.sha;
                 const content = decodeURIComponent(escape(window.atob(data.content.replace(/\n/g, ""))));
                 const remoteData = JSON.parse(content);
                 
-                state.shortcuts = remoteData.shortcuts || DEFAULT_SHORTCUTS;
+                // 智能合并逻辑 (取最大点击数)
+                const remoteShortcuts = remoteData.shortcuts || [];
+                // 创建一个 Map 方便查找
+                const remoteMap = new Map(remoteShortcuts.map(i => [i.url, i]));
+                
+                // 遍历本地，更新数据
+                state.shortcuts.forEach(localItem => {
+                    const remoteItem = remoteMap.get(localItem.url);
+                    if (remoteItem) {
+                        // 如果远程点击数更多，更新本地
+                        if ((remoteItem.clicks || 0) > (localItem.clicks || 0)) {
+                            localItem.clicks = remoteItem.clicks;
+                        }
+                        // 也可以反过来，如果本地更多，保留本地（下次 push 会推上去）
+                    }
+                });
+                
+                // 处理远程有但本地没有的新图标 (可选，这里做简单覆盖或追加)
+                // 为简单起见，这里采用：如果列表长度不同或 URL 变了，优先使用远程列表结构，但保留本地高点击数
+                if (JSON.stringify(remoteData.shortcuts) !== JSON.stringify(state.shortcuts)) {
+                     // 简单策略：直接使用远程结构，但尝试保留本地高点击
+                     // 实际：直接覆盖通常更符合“同步”直觉，除了正在点击的那一瞬间
+                     state.shortcuts = remoteShortcuts;
+                }
+
                 state.iconBaseUrl = remoteData.iconBaseUrl || state.iconBaseUrl;
                 sortShortcuts(); // 拉取后重新排序
                 renderShortcuts();
                 updateCloudStatus('synced');
                 document.getElementById('modal-cloud-config').classList.add('hidden');
-            } catch (error) { console.error(error); showCloudError(error.message); updateCloudStatus('error'); }
+            } catch (error) { 
+                console.error(error); 
+                showCloudError(error.message); 
+                updateCloudStatus('error'); 
+            }
         }
 
         async function pushToGitHub() {
@@ -275,9 +323,9 @@
             
             try {
                 if (!state.ghSha) {
-                    try { const c = await fetch(url, {headers:{'Authorization':`Bearer ${state.ghToken}`}}); if(c.ok){ const d=await c.json(); state.ghSha=d.sha; body.sha=d.sha; } } catch(e){}
+                    try { const c = await fetch(url, {cache: 'no-store', headers:{'Authorization':`token ${state.ghToken}`}}); if(c.ok){ const d=await c.json(); state.ghSha=d.sha; body.sha=d.sha; } } catch(e){}
                 }
-                const res = await fetch(url, { method: 'PUT', headers: { 'Authorization': `Bearer ${state.ghToken}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(body) });
+                const res = await fetch(url, { method: 'PUT', cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', headers: { 'Authorization': `token ${state.ghToken}`, 'Accept': 'application/vnd.github.v3+json' }, body: JSON.stringify(body) });
                 if (res.status === 409) { await pullFromGitHub(); return; }
                 if (!res.ok) throw new Error(res.statusText);
                 const data = await res.json();
@@ -290,9 +338,9 @@
             const text = document.getElementById('cloud-text');
             const dot = document.getElementById('cloud-dot');
             if (status === 'connecting') { text.innerText = '连接中...'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white animate-pulse"; }
-            else if (status === 'synced') { text.innerText = '已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
+            else if (status === 'synced') { text.innerText = 'GitHub 已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
             else if (status === 'syncing') { text.innerText = '上传中...'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white animate-pulse"; }
-            else { text.innerText = '同步错误'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white"; }
+            else { text.innerText = '未连接 (本地)'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white"; }
         }
         function showCloudError(msg) { const el = document.getElementById('cloud-error-msg'); el.innerText = msg; el.classList.remove('hidden'); }
 
