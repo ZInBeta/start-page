@@ -26,10 +26,16 @@
       "url": "https://www.doubao.com/chat/",
       "customIcon": "doubao.png",
       "clicks": 0
+    },
+    {
+      "name": "抖音",
+      "url": "https://www.douyin.com/",
+      "customIcon": "douyin.png",
+      "clicks": 0
     }
   ],
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:39:47.739Z"
+  "updatedAt": "2026-01-07T06:39:56.619Z"
 }
