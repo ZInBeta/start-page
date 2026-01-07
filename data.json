@@ -1,49 +1,35 @@
 {
   "shortcuts": [
     {
-      "name": "抖音",
-      "url": "https://www.douyin.com/",
-      "customIcon": "douyin.png",
+      "name": "Gemini",
+      "url": "https://gemini.google.com/",
+      "customIcon": null,
       "clicks": 2
     },
     {
-      "name": "Bilibili",
-      "url": "https://www.bilibili.com/",
-      "customIcon": "bilibili.png",
-      "clicks": 1
-    },
-    {
-      "name": "Gemini",
-      "url": "https://gemini.google.com/",
-      "customIcon": "gemini.png",
-      "clicks": 1
+      "name": "Bing",
+      "url": "https://www.bing.com/"
     },
     {
       "name": "Google",
-      "url": "https://www.google.com/",
-      "clicks": 0
+      "url": "https://www.google.com/"
     },
     {
       "name": "ChatGPT",
-      "url": "https://chat.openai.com/",
-      "customIcon": "ChatGPT.png",
-      "clicks": 0
+      "url": "https://chat.openai.com/"
     },
     {
       "name": "GitHub",
-      "url": "https://github.com/",
-      "customIcon": "github.png",
-      "clicks": 0
+      "url": "https://github.com/"
     },
     {
-      "name": "豆包",
-      "url": "https://www.doubao.com/chat/",
-      "customIcon": "doubao.png",
-      "clicks": 0
+      "name": "哔哩哔哩",
+      "url": "https://www.bilibili.com/",
+      "customIcon": null
     }
   ],
   "financeLogs": [],
   "theme": "theme-light",
-  "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:20:18.501Z"
+  "iconBaseUrl": "",
+  "updatedAt": "2026-01-07T06:22:25.325Z"
 }
