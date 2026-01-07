@@ -7,15 +7,15 @@
       "clicks": 5
     },
     {
-      "name": "Gemini",
-      "url": "https://gemini.google.com/",
-      "customIcon": "gemini.png",
-      "clicks": 2
-    },
-    {
       "name": "抖音",
       "url": "https://www.douyin.com/",
       "customIcon": "douyin.png",
+      "clicks": 3
+    },
+    {
+      "name": "Gemini",
+      "url": "https://gemini.google.com/",
+      "customIcon": "gemini.png",
       "clicks": 2
     },
     {
@@ -45,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T07:22:06.321Z"
+  "updatedAt": "2026-01-07T08:38:18.319Z"
 }
