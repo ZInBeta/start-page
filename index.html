@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 关键：防止 Blob 图片被浏览器安全策略拦截 -->
     <meta name="referrer" content="no-referrer">
     <title>新标签页</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- 字体加速 -->
     <link rel="preconnect" href="https://fonts.loli.net">
     <link rel="preconnect" href="https://gstatic.loli.net" crossorigin>
     <link href="https://fonts.loli.net/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -39,14 +34,11 @@
     <style type="text/tailwindcss">
         body { font-family: 'Outfit', sans-serif; transition: background-image 0.5s ease, background-color 0.5s ease, color 0.3s ease; }
         .glass-panel { @apply backdrop-blur-md bg-white/60 border border-white/40 dark:bg-slate-800/60 dark:border-slate-700/50; }
-        
         input[type="search"]::-webkit-search-decoration,
         input[type="search"]::-webkit-search-cancel-button,
         input[type="search"]::-webkit-search-results-button,
         input[type="search"]::-webkit-search-results-decoration { display: none; }
-        
         .shortcut-item { transition: transform 0.2s, background-color 0.2s; }
-        
         /* 主题定义 */
         .theme-light { @apply bg-gray-50 text-gray-800; }
         .theme-dark { @apply bg-slate-900 text-slate-100; }
@@ -54,8 +46,7 @@
         .theme-green { @apply bg-gradient-to-br from-emerald-50 to-teal-100 text-teal-900 dark:from-slate-900 dark:to-emerald-950 dark:text-slate-100; }
         .theme-purple { @apply bg-gradient-to-br from-fuchsia-50 to-purple-100 text-purple-900 dark:from-slate-900 dark:to-purple-950 dark:text-slate-100; }
         .theme-warm { @apply bg-gradient-to-br from-orange-50 to-amber-100 text-orange-900 dark:from-slate-900 dark:to-orange-950 dark:text-slate-100; }
-
-        /* 智能头像背景色 */
+        /* 头像背景 */
         .avatar-bg-0 { @apply bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-200; }
         .avatar-bg-1 { @apply bg-orange-100 text-orange-600 dark:bg-orange-900/50 dark:text-orange-200; }
         .avatar-bg-2 { @apply bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-200; }
@@ -68,11 +59,9 @@
 </head>
 <body id="app-body" class="min-h-screen font-sans overflow-x-hidden flex flex-col theme-light">
 
-    <!-- 顶部导航 -->
     <header class="w-full px-6 py-4 flex flex-col z-20 relative">
         <div class="flex items-center justify-between w-full">
             <div class="flex items-center gap-2">
-                <!-- GitHub Sync Button -->
                 <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel cursor-pointer hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all select-none group shadow-sm">
                     <div class="relative flex items-center justify-center">
                         <i data-lucide="github" class="w-4 h-4 opacity-70 group-hover:text-black dark:group-hover:text-white transition-colors"></i>
@@ -80,22 +69,18 @@
                     </div>
                     <span id="cloud-text" class="text-xs font-bold opacity-80">配置同步</span>
                 </div>
-                
-                <!-- 手动刷新按钮 (防止一直转圈，只在点击时旋转) -->
-                <button onclick="window.manualSync()" class="p-2 rounded-full glass-panel hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all" title="立即从 GitHub 同步">
+                <button onclick="window.manualSync()" class="p-2 rounded-full glass-panel hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all" title="立即同步">
                     <i data-lucide="refresh-cw" id="sync-icon" class="w-4 h-4 opacity-70"></i>
                 </button>
             </div>
-
             <div class="flex items-center gap-3">
                 <div id="date-display" class="text-sm font-medium opacity-60 hidden md:block select-none"></div>
-                <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 dark:bg-slate-700/50 dark:hover:bg-slate-600 shadow-sm" title="设置 / 编辑布局">
+                <button id="btn-edit" class="p-2 rounded-full transition-all duration-300 bg-white/50 hover:bg-white/80 dark:bg-slate-700/50 dark:hover:bg-slate-600 shadow-sm" title="设置">
                     <i data-lucide="settings-2" class="w-5 h-5 opacity-70"></i>
                 </button>
             </div>
         </div>
 
-        <!-- 编辑模式控制台 -->
         <div id="edit-panel" class="hidden w-full mt-4 animate-fade-in-down absolute top-14 left-0 px-4 z-30">
             <div class="glass-panel rounded-2xl p-4 border shadow-xl flex flex-col gap-4 max-w-lg mx-auto backdrop-blur-xl">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -110,7 +95,6 @@
                             <button onclick="changeTheme('theme-warm')" class="w-5 h-5 rounded-full bg-gradient-to-br from-orange-300 to-amber-300 ring-2 ring-transparent hover:ring-blue-400 focus:ring-blue-500 transition-all shadow-sm" title="暖阳"></button>
                         </div>
                     </div>
-                    <div class="w-full h-px bg-gray-400/20 sm:w-px sm:h-6 hidden sm:block"></div>
                     <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                         <button onclick="resetData()" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-300 whitespace-nowrap">重置</button>
                         <button id="btn-done" class="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-1.5 whitespace-nowrap">
@@ -118,11 +102,10 @@
                         </button>
                     </div>
                 </div>
-                <!-- 图标 BaseURL 设置 -->
                 <div class="pt-3 border-t border-gray-200 dark:border-slate-700">
                     <label class="block text-[10px] font-bold opacity-60 uppercase tracking-widest mb-1">Github 图标仓库前缀 (Base URL)</label>
                     <div class="flex gap-2">
-                        <input id="input-base-url" type="text" placeholder="推荐: https://cdn.jsdelivr.net/gh/你的ID/仓库@main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
+                        <input id="input-base-url" type="text" placeholder="https://cdn.jsdelivr.net/gh/User/Repo@main/icons/" class="flex-1 p-2 text-xs rounded-lg bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-600 focus:border-blue-500 outline-none font-mono text-gray-600 dark:text-gray-300" onchange="window.saveBaseUrl(this.value)">
                         <button onclick="window.saveBaseUrl(document.getElementById('input-base-url').value)" class="px-3 py-1.5 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-bold transition-colors">保存</button>
                     </div>
                     <p class="text-[10px] text-gray-400 mt-1">💡 提示：图标将完全根据点击热度自动排序。</p>
@@ -131,9 +114,7 @@
         </div>
     </header>
 
-    <!-- 主体内容 -->
     <main id="main-container" class="flex-1 container mx-auto px-4 flex flex-col justify-center items-center max-w-6xl py-10 transition-all duration-300">
-        
         <div id="greeting-section" class="text-center mb-12 animate-fade-in-up">
             <h1 id="clock-time" class="text-7xl md:text-9xl font-semibold tracking-tight mb-2 tabular-nums cursor-default select-none opacity-90">00:00</h1>
             <p id="greeting-text" class="text-lg md:text-xl font-normal opacity-60">Loading...</p>
@@ -141,9 +122,7 @@
 
         <div id="search-container" class="w-full max-w-2xl mb-12 relative group z-10 transition-all duration-300">
             <form id="search-form" class="relative">
-                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none opacity-40">
-                    <i data-lucide="search" class="w-5 h-5"></i>
-                </div>
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none opacity-40"><i data-lucide="search" class="w-5 h-5"></i></div>
                 <input id="search-input" type="text" placeholder="Search Bing..." class="w-full pl-14 pr-36 py-4 rounded-full text-lg shadow-lg shadow-blue-900/5 hover:shadow-xl focus:shadow-2xl transition-all duration-300 outline-none border border-transparent focus:border-blue-500/30 bg-white/80 placeholder-gray-400 dark:bg-slate-800 dark:text-white dark:placeholder-gray-500">
                 <div class="absolute inset-y-0 right-2 flex items-center gap-1">
                     <div class="flex items-center p-1 rounded-full bg-gray-100/50 dark:bg-slate-700/50">
@@ -151,24 +130,16 @@
                         <button type="button" data-engine="google" class="engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all duration-200">G</button>
                     </div>
                     <div class="w-px h-4 bg-gray-300/50 mx-1"></div>
-                    <button type="button" onclick="openFinanceModal()" class="p-2 rounded-full hover:bg-green-50 text-gray-400 hover:text-green-600 transition-colors dark:hover:bg-green-900/30 dark:hover:text-green-400" title="我的钱包">
-                        <i data-lucide="wallet" class="w-4 h-4"></i>
-                    </button>
+                    <button type="button" onclick="openFinanceModal()" class="p-2 rounded-full hover:bg-green-50 text-gray-400 hover:text-green-600 transition-colors dark:hover:bg-green-900/30 dark:hover:text-green-400" title="我的钱包"><i data-lucide="wallet" class="w-4 h-4"></i></button>
                 </div>
             </form>
         </div>
 
-        <!-- 链接网格 -->
-        <div id="shortcuts-container" class="w-full grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-8 gap-x-4 gap-y-6 justify-items-center animate-fade-in-up pb-20 relative" style="animation-delay: 0.1s;">
-            <!-- JS 生成 -->
-        </div>
+        <div id="shortcuts-container" class="w-full grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-8 gap-x-4 gap-y-6 justify-items-center animate-fade-in-up pb-20 relative" style="animation-delay: 0.1s;"></div>
     </main>
 
-    <footer class="fixed bottom-0 w-full p-4 text-center pointer-events-none opacity-40 text-xs">
-        Designed for Focus & Efficiency
-    </footer>
+    <footer class="fixed bottom-0 w-full p-4 text-center pointer-events-none opacity-40 text-xs">Designed for Focus & Efficiency</footer>
 
-    <!-- 弹窗：添加/编辑链接 -->
     <div id="modal-add-link" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up p-6">
             <h3 id="modal-title" class="text-xl font-bold mb-4 dark:text-white">添加快捷方式</h3>
@@ -186,7 +157,6 @@
         </div>
     </div>
 
-    <!-- 弹窗：GitHub 同步 -->
     <div id="modal-cloud-config" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up p-6">
             <h3 class="text-xl font-bold mb-2 dark:text-white flex items-center gap-2"><i data-lucide="github" class="w-6 h-6"></i> GitHub 数据同步</h3>
@@ -200,7 +170,6 @@
         </div>
     </div>
     
-    <!-- 弹窗：财务 -->
     <div id="modal-finance" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden"><div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden animate-fade-in-up p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold dark:text-white flex items-center gap-2"><i data-lucide="wallet" class="w-5 h-5 text-green-500"></i> 财务概览</h3><button onclick="window.closeFinanceModal()" class="opacity-50 hover:opacity-100 dark:text-white"><i data-lucide="x" class="w-5 h-5"></i></button></div><div class="grid grid-cols-2 gap-4 mb-6"><div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-700 text-center"><div class="text-xs text-gray-400 mb-1 font-bold">本月支出</div><div class="text-xl font-bold text-gray-800 dark:text-white" id="modal-finance-spent">¥0</div></div><div class="p-4 rounded-2xl bg-green-50 dark:bg-green-900/20 text-center"><div class="text-xs text-green-600/70 dark:text-green-400 mb-1 font-bold">当前余额</div><div class="text-xl font-bold text-green-600 dark:text-green-400" id="modal-finance-balance">¥0</div></div></div><form id="form-finance" class="flex gap-2 border-t border-gray-100 dark:border-slate-700 pt-5"><input id="input-balance" type="number" step="0.01" placeholder="最新余额" class="flex-1 p-3 rounded-xl bg-gray-50 dark:bg-slate-700 outline-none font-mono font-bold dark:text-white" required><button type="submit" class="px-5 py-3 rounded-xl bg-black dark:bg-white dark:text-black text-white font-bold transition-transform active:scale-95">更新</button></form></div></div>
 
     <script type="module">
@@ -229,11 +198,12 @@
             ghSha: null
         };
 
+        // 全局变量，用于记录待处理的同步类型 ('fast' | 'slow' | null)
+        let pendingSyncType = null;
+
         function init() {
             applyTheme(state.theme);
             document.getElementById('input-base-url').value = state.iconBaseUrl;
-            
-            // 恢复 GitHub 配置
             document.getElementById('input-gh-owner').value = state.ghOwner;
             document.getElementById('input-gh-repo').value = state.ghRepo;
             document.getElementById('input-gh-token').value = state.ghToken;
@@ -258,7 +228,6 @@
             state.shortcuts.sort((a, b) => (b.clicks || 0) - (a.clicks || 0));
         }
 
-        // --- GitHub Logic (Manual Only, with Timeout) ---
         window.manualSync = () => {
             const icon = document.getElementById('sync-icon');
             icon.classList.add('animate-spin');
@@ -271,7 +240,7 @@
 
             const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s Timeout
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
 
             try {
                 const res = await fetch(url, {
@@ -291,24 +260,17 @@
                 const content = decodeURIComponent(escape(window.atob(data.content.replace(/\n/g, ""))));
                 const remoteData = JSON.parse(content);
 
-                // Smart Merge Logic
                 const remoteShortcuts = remoteData.shortcuts || [];
                 const remoteMap = new Map(remoteShortcuts.map(i => [i.url, i]));
                 
                 state.shortcuts.forEach(localItem => {
                     const remoteItem = remoteMap.get(localItem.url);
-                    if (remoteItem) {
-                        // Max clicks wins
-                        if ((remoteItem.clicks || 0) > (localItem.clicks || 0)) {
-                            localItem.clicks = remoteItem.clicks;
-                        }
+                    if (remoteItem && (remoteItem.clicks || 0) > (localItem.clicks || 0)) {
+                        localItem.clicks = remoteItem.clicks;
                     }
                 });
                 
-                // If structure changed, prefer remote structure
                 if (JSON.stringify(remoteData.shortcuts) !== JSON.stringify(state.shortcuts)) {
-                     // For pure syncing experience, remote truth + local clicks is best, 
-                     // but here we simply take remote structure to keep things consistent across devices
                      state.shortcuts = remoteShortcuts;
                 }
 
@@ -331,7 +293,6 @@
             if(!state.ghOwner || !state.ghRepo || !state.ghToken) return;
             updateCloudStatus('syncing');
             const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
-            
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 10000);
 
@@ -365,6 +326,8 @@
                 updateCloudStatus('error'); 
             } finally {
                 clearTimeout(timeoutId);
+                // 重置状态
+                pendingSyncType = null;
             }
         }
 
@@ -389,25 +352,72 @@
             await pullFromGitHub();
         });
 
+        // 核心修改 (v11.0): 智能急慢分治策略
         window.recordClick = (index) => {
+            // 1. 快照：记录点击前的排序状态
+            const oldOrder = state.shortcuts.map(s => s.url).join('|');
+
+            // 2. 更新数据
             const item = state.shortcuts[index];
             if (!item.clicks) item.clicks = 0;
             item.clicks++;
             sortShortcuts();
-            saveState();
+
+            // 3. 判断：顺序是否变了？
+            const newOrder = state.shortcuts.map(s => s.url).join('|');
+            const hasOrderChanged = oldOrder !== newOrder;
+
+            // 4. 本地立即生效
+            localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
             renderShortcuts();
+
+            // 5. 智能同步
+            if (hasOrderChanged) {
+                // 排名变了 -> 急同步 (5秒)
+                saveState(5000);
+            } else {
+                // 排名没变 -> 慢同步 (60秒防抖)
+                // 这样可以把你连续的50次点击合并成1次网络请求
+                saveState(60000);
+            }
         }
 
-        function saveState() { localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts)); if(window.pushTimeout) clearTimeout(window.pushTimeout); window.pushTimeout = setTimeout(pushToGitHub, 2000); }
+        // 统一保存入口 (支持优先级判断)
+        // delay: 延迟毫秒数
+        function saveState(delay = 2000) { 
+            localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts)); 
+            if (!state.ghToken) return;
+
+            // 判断本次请求的类型
+            const type = delay <= 5000 ? 'fast' : 'slow';
+
+            // 如果已有等待中的任务
+            if (window.pushTimeout) {
+                // 如果当前等待的是"急"(fast)，而新来的是"慢"(slow)，则忽略慢的
+                // (因为急的任务马上就会把最新数据带上去)
+                if (pendingSyncType === 'fast' && type === 'slow') {
+                    return; 
+                }
+                // 否则(比如慢换慢，或者慢换急)，清除旧的，重新计时
+                clearTimeout(window.pushTimeout);
+            }
+
+            pendingSyncType = type;
+            window.pushTimeout = setTimeout(() => {
+                pushToGitHub();
+                window.pushTimeout = null;
+            }, delay); 
+        }
+
         function updateClock() { const now = new Date(); document.getElementById('clock-time').innerText = now.toLocaleTimeString('en-US', {hour12:false, hour:'2-digit', minute:'2-digit'}); document.getElementById('date-display').innerText = now.toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'}); document.getElementById('greeting-text').innerText = GREETINGS[Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24) % GREETINGS.length]; }
-        window.changeTheme = (themeName) => { state.theme = themeName; localStorage.setItem('myTheme', themeName); applyTheme(themeName); saveState(); }
-        window.saveBaseUrl = (url) => { let cleanUrl = url.trim(); if (cleanUrl && !cleanUrl.endsWith('/')) cleanUrl += '/'; state.iconBaseUrl = cleanUrl; localStorage.setItem('myIconBaseUrl', state.iconBaseUrl); document.getElementById('input-base-url').value = state.iconBaseUrl; saveState(); renderShortcuts(); }
+        window.changeTheme = (themeName) => { state.theme = themeName; localStorage.setItem('myTheme', themeName); applyTheme(themeName); saveState(2000); }
+        window.saveBaseUrl = (url) => { let cleanUrl = url.trim(); if (cleanUrl && !cleanUrl.endsWith('/')) cleanUrl += '/'; state.iconBaseUrl = cleanUrl; localStorage.setItem('myIconBaseUrl', state.iconBaseUrl); document.getElementById('input-base-url').value = state.iconBaseUrl; saveState(2000); renderShortcuts(); }
         function applyTheme(themeName) { document.getElementById('app-body').className = `min-h-screen font-sans overflow-x-hidden flex flex-col ${themeName}`; if (themeName === 'theme-dark') document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }
         
         window.openCloudModal = () => document.getElementById('modal-cloud-config').classList.remove('hidden');
         window.openFinanceModal = () => { document.getElementById('modal-finance').classList.remove('hidden'); const l=state.financeLogs; const last=l.length>0?l[l.length-1]:{balance:0}; document.getElementById('modal-finance-balance').innerText='¥ '+parseFloat(last.balance).toLocaleString(); document.getElementById('input-balance').focus(); };
         window.closeFinanceModal = () => document.getElementById('modal-finance').classList.add('hidden');
-        window.deleteLink = (i) => { if(confirm("确定删除?")) { state.shortcuts.splice(i,1); saveState(); renderShortcuts(); } };
+        window.deleteLink = (i) => { if(confirm("确定删除?")) { state.shortcuts.splice(i,1); saveState(2000); renderShortcuts(); } };
         window.openEditLinkModal = (i) => { state.editingIndex = i; const link = state.shortcuts[i]; document.getElementById('modal-title').innerText = "编辑快捷方式"; document.getElementById('modal-add-link').classList.remove('hidden'); document.getElementById('input-link-name').value = link.name; document.getElementById('input-link-url').value = link.url; const previewDiv = document.getElementById('preview-icon'); const urlInput = document.getElementById('input-icon-url'); urlInput.value = (link.customIcon && !link.customIcon.startsWith('data:')) ? link.customIcon : ''; window.handleUrlInput(urlInput.value); };
         window.handleUrlInput = (val) => { const previewDiv = document.getElementById('preview-icon'); const statusText = document.getElementById('upload-status'); let fullUrl = val; if (val && !val.startsWith('http') && !val.startsWith('data:') && state.iconBaseUrl) fullUrl = state.iconBaseUrl + val; if (val) { state.tempIconBase64 = val; previewDiv.classList.remove('hidden'); previewDiv.querySelector('img').src = fullUrl; } else { previewDiv.classList.add('hidden'); state.tempIconBase64 = null; } };
         window.handleIconUpload = (e) => { const f = e.target.files[0]; if(!f) return; if(f.size > 200*1024) { alert("建议图片小于200KB"); } const r = new FileReader(); r.onload = (ev) => { state.tempIconBase64 = ev.target.result; document.getElementById('preview-icon').classList.remove('hidden'); document.getElementById('preview-icon').querySelector('img').src = state.tempIconBase64; document.getElementById('upload-status').innerText = "已选择本地图片"; }; r.readAsDataURL(f); };
@@ -456,9 +466,9 @@
         }
 
         document.getElementById('btn-edit').onclick = toggleEditMode; document.getElementById('btn-done').onclick = toggleEditMode; document.getElementById('btn-cancel-add').onclick = () => document.getElementById('modal-add-link').classList.add('hidden');
-        document.getElementById('form-add-link').onsubmit = (e) => { e.preventDefault(); const n = document.getElementById('input-link-name').value; let u = document.getElementById('input-link-url').value; if(n && u){ if(!u.startsWith('http')) u='https://'+u; const newLink = { name:n, url:u, customIcon: state.tempIconBase64, clicks: (state.editingIndex !== null ? state.shortcuts[state.editingIndex].clicks : 0) }; if (state.editingIndex !== null) state.shortcuts[state.editingIndex] = newLink; else state.shortcuts.push(newLink); sortShortcuts(); saveState(); renderShortcuts(); document.getElementById('modal-add-link').classList.add('hidden'); } };
+        document.getElementById('form-add-link').onsubmit = (e) => { e.preventDefault(); const n = document.getElementById('input-link-name').value; let u = document.getElementById('input-link-url').value; if(n && u){ if(!u.startsWith('http')) u='https://'+u; const newLink = { name:n, url:u, customIcon: state.tempIconBase64, clicks: (state.editingIndex !== null ? state.shortcuts[state.editingIndex].clicks : 0) }; if (state.editingIndex !== null) state.shortcuts[state.editingIndex] = newLink; else state.shortcuts.push(newLink); sortShortcuts(); saveState(2000); renderShortcuts(); document.getElementById('modal-add-link').classList.add('hidden'); } };
         document.getElementById('search-form').onsubmit = (e) => { e.preventDefault(); const t=document.getElementById('search-input').value.trim(); if(t) window.location.href=(state.searchEngine==='bing'?'https://www.bing.com/search?q=':'https://www.google.com/search?q=')+encodeURIComponent(t); };
-        document.getElementById('form-finance').onsubmit = (e) => { e.preventDefault(); const v=parseFloat(document.getElementById('input-balance').value); if(!isNaN(v)){ state.financeLogs.push({date:new Date().toISOString(), balance:v}); saveState(); window.openFinanceModal(); } };
+        document.getElementById('form-finance').onsubmit = (e) => { e.preventDefault(); const v=parseFloat(document.getElementById('input-balance').value); if(!isNaN(v)){ state.financeLogs.push({date:new Date().toISOString(), balance:v}); saveState(2000); window.openFinanceModal(); } };
         function updateEngineUI() { const btns=document.querySelectorAll('.engine-btn'); btns.forEach(b=>{ const sel=b.dataset.engine===state.searchEngine; b.className=`engine-btn px-3 py-1 rounded-full text-xs font-bold transition-all ${sel?'bg-black text-white dark:bg-white dark:text-black shadow-md':'text-gray-400 hover:text-gray-600 dark:text-slate-500 dark:hover:text-slate-300'}`; }); document.getElementById('search-input').placeholder=`Search ${state.searchEngine==='bing'?'Bing':'Google'}...`; }
         document.querySelectorAll('.engine-btn').forEach(b=>b.onclick=()=>{state.searchEngine=b.dataset.engine; updateEngineUI(); document.getElementById('search-input').focus();});
 
