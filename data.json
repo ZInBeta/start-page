@@ -1,0 +1,33 @@
+{
+  "shortcuts": [
+    {
+      "name": "Bing",
+      "url": "https://www.bing.com/",
+      "clicks": 0
+    },
+    {
+      "name": "Google",
+      "url": "https://www.google.com/",
+      "clicks": 0
+    },
+    {
+      "name": "ChatGPT",
+      "url": "https://chat.openai.com/",
+      "clicks": 0
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com/",
+      "clicks": 0
+    },
+    {
+      "name": "Bilibili",
+      "url": "https://www.bilibili.com/",
+      "clicks": 0
+    }
+  ],
+  "financeLogs": [],
+  "theme": "theme-light",
+  "iconBaseUrl": "",
+  "updatedAt": "2026-01-07T05:57:49.645Z"
+}
