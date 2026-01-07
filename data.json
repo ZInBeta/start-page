@@ -16,7 +16,7 @@
       "name": "Gemini",
       "url": "https://gemini.google.com/",
       "customIcon": "gemini.png",
-      "clicks": 2
+      "clicks": 3
     },
     {
       "name": "GitHub",
@@ -45,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T09:17:46.327Z"
+  "updatedAt": "2026-01-07T11:57:28.329Z"
 }
