@@ -10,7 +10,7 @@
       "name": "哔哩哔哩",
       "url": "https://www.bilibili.com/",
       "customIcon": "bilibili.png",
-      "clicks": 1
+      "clicks": 2
     },
     {
       "name": "ChatGPT",
@@ -44,5 +44,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:40:46.459Z"
+  "updatedAt": "2026-01-07T06:40:48.946Z"
 }
