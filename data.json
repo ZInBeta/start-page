@@ -12,6 +12,12 @@
       "clicks": 1
     },
     {
+      "name": "Gemini",
+      "url": "https://gemini.google.com/",
+      "customIcon": "gemini.png",
+      "clicks": 1
+    },
+    {
       "name": "Google",
       "url": "https://www.google.com/",
       "clicks": 0
@@ -31,16 +37,10 @@
       "url": "https://www.doubao.com/chat/",
       "customIcon": "doubao.png",
       "clicks": 0
-    },
-    {
-      "name": "Gemini",
-      "url": "https://gemini.google.com/",
-      "customIcon": "gemini.png",
-      "clicks": 0
     }
   ],
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-07T06:09:10.650Z"
+  "updatedAt": "2026-01-07T06:09:14.974Z"
 }
