@@ -39,6 +39,9 @@
         input[type="search"]::-webkit-search-results-button,
         input[type="search"]::-webkit-search-results-decoration { display: none; }
         
+        /* 仅保留基础过渡，移除拖拽相关样式 */
+        .shortcut-item { transition: transform 0.2s, background-color 0.2s; }
+        
         /* 主题定义 */
         .theme-light { @apply bg-gray-50 text-gray-800; }
         .theme-dark { @apply bg-slate-900 text-slate-100; }
@@ -187,11 +190,11 @@
 
     <script type="module">
         const DEFAULT_SHORTCUTS = [
-            { name: 'Bing', url: 'https://www.bing.com/', clicks: 0 }, 
-            { name: 'Google', url: 'https://www.google.com/', clicks: 0 },
-            { name: 'ChatGPT', url: 'https://chat.openai.com/', clicks: 0 }, 
-            { name: 'GitHub', url: 'https://github.com/', clicks: 0 },
-            { name: 'Bilibili', url: 'https://www.bilibili.com/', clicks: 0 },
+            { name: 'Bing', url: 'https://www.bing.com/', clicks: 100 }, 
+            { name: 'Google', url: 'https://www.google.com/', clicks: 90 },
+            { name: 'ChatGPT', url: 'https://chat.openai.com/', clicks: 80 }, 
+            { name: 'GitHub', url: 'https://github.com/', clicks: 10 },
+            { name: 'Bilibili', url: 'https://www.bilibili.com/', clicks: 5 },
         ];
         
         const GREETINGS = ["Do what you can.", "Progress, not perfection.", "Small steps.", "Keep pushing.", "Stay focused.", "Believe in yourself."];
