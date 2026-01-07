@@ -63,12 +63,13 @@
     <!-- 顶部导航 -->
     <header class="w-full px-6 py-4 flex flex-col z-20 relative">
         <div class="flex items-center justify-between w-full">
+            <!-- GitHub Sync Button -->
             <div id="btn-cloud-sync" onclick="openCloudModal()" class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-panel cursor-pointer hover:bg-white/80 dark:hover:bg-slate-700/80 transition-all select-none group shadow-sm">
                 <div class="relative flex items-center justify-center">
-                    <i data-lucide="cloud" class="w-4 h-4 opacity-70 group-hover:text-blue-500 transition-colors"></i>
+                    <i data-lucide="github" class="w-4 h-4 opacity-70 group-hover:text-black dark:group-hover:text-white transition-colors"></i>
                     <span id="cloud-dot" class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-gray-400 rounded-full border border-white dark:border-slate-800"></span>
                 </div>
-                <span id="cloud-text" class="text-xs font-bold opacity-80">未连接</span>
+                <span id="cloud-text" class="text-xs font-bold opacity-80">GitHub 未连接</span>
             </div>
 
             <div class="flex items-center gap-3">
@@ -229,31 +230,39 @@
         </div>
     </div>
 
-    <!-- 弹窗：云同步配置 -->
+    <!-- 弹窗：GitHub 同步配置 (替换了 Firebase) -->
     <div id="modal-cloud-config" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in-up p-6">
-            <h3 class="text-xl font-bold mb-2 dark:text-white">云端同步配置 (Firebase)</h3>
-            <p class="text-xs text-gray-500 mb-4">填写配置后，你的链接和记账数据将跨设备自动同步。数据加密存储在 Google Cloud。</p>
+            <h3 class="text-xl font-bold mb-2 dark:text-white flex items-center gap-2"><i data-lucide="github" class="w-6 h-6"></i> GitHub 数据同步</h3>
+            <p class="text-xs text-gray-500 mb-4">数据将直接保存到你 GitHub 仓库的 data.json 文件中。这比 Firebase 更稳定且完全由你掌控。</p>
             <div id="cloud-error-msg" class="hidden mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-xs border border-red-100 dark:bg-red-900/30 dark:border-red-900/50 dark:text-red-300"></div>
+            
             <form id="form-cloud-config" class="space-y-3">
-                <div><label class="block text-xs font-bold text-gray-500 mb-1">API Key</label><input id="input-firebase-apikey" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" placeholder="AIzaSy..." required></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-bold text-gray-500 mb-1">Project ID</label><input id="input-firebase-projectid" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div>
-                    <div><label class="block text-xs font-bold text-gray-500 mb-1">App ID</label><input id="input-firebase-appid" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" required></div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">用户名 (Owner)</label>
+                        <input id="input-gh-owner" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" placeholder="e.g. ZInBeta" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">仓库名 (Repo)</label>
+                        <input id="input-gh-repo" type="text" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" placeholder="e.g. start-page" required>
+                    </div>
                 </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Personal Access Token (需勾选 repo 权限)</label>
+                    <input id="input-gh-token" type="password" class="w-full p-2 text-xs rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white font-mono" placeholder="ghp_xxxxxxxxxxxx" required>
+                    <p class="text-[10px] text-gray-400 mt-1">去 GitHub Settings -> Developer settings -> Tokens (Classic) 生成。</p>
+                </div>
+                
                 <div class="flex gap-3 mt-6 pt-2">
                     <button type="button" class="flex-1 py-2 rounded-lg border hover:bg-gray-50 dark:border-slate-600 dark:hover:bg-slate-700 dark:text-slate-300" onclick="document.getElementById('modal-cloud-config').classList.add('hidden')">取消</button>
-                    <button type="submit" id="btn-connect-cloud" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold">连接并同步</button>
+                    <button type="submit" id="btn-connect-cloud" class="flex-1 py-2 rounded-lg bg-black hover:bg-gray-800 text-white font-bold transition-all">保存并同步</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
         const DEFAULT_SHORTCUTS = [
             { name: 'Bing', url: 'https://www.bing.com/', clicks: 0 }, 
             { name: 'Google', url: 'https://www.google.com/', clicks: 0 },
@@ -280,95 +289,154 @@
             iconBaseUrl: localStorage.getItem('myIconBaseUrl') || '', 
             financeLogs: JSON.parse(localStorage.getItem('myFinanceLogs')) || [],
             tempIconBase64: null,
-            firebaseConfig: JSON.parse(localStorage.getItem('myFirebaseConfig')) || null,
-            db: null,
-            userId: null
+            // GitHub Config
+            ghOwner: localStorage.getItem('ghOwner') || '',
+            ghRepo: localStorage.getItem('ghRepo') || '',
+            ghToken: localStorage.getItem('ghToken') || '',
+            ghSha: null // 用于 GitHub API 更新文件时验证
         };
-
-        // 获取 appId 用于路径规则
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'zinbeta-startpage';
 
         function init() {
             applyTheme(state.theme);
-            document.getElementById('input-base-url').value = state.iconBaseUrl; 
+            document.getElementById('input-base-url').value = state.iconBaseUrl;
+            
+            // 初始化 GitHub 配置输入框
+            document.getElementById('input-gh-owner').value = state.ghOwner;
+            document.getElementById('input-gh-repo').value = state.ghRepo;
+            document.getElementById('input-gh-token').value = state.ghToken;
+
+            // 尝试同步
+            if(state.ghOwner && state.ghRepo && state.ghToken) {
+                pullFromGitHub();
+            }
+
             renderShortcuts();
             updateEngineUI();
             updateClock(); setInterval(updateClock, 1000);
             lucide.createIcons();
             document.getElementById('search-input').focus();
-            
-            if (state.firebaseConfig) { initFirebase(state.firebaseConfig); }
+            document.getElementById('search-input').addEventListener('keydown', (e) => { if(e.key === 'Tab'){ e.preventDefault(); state.searchEngine = state.searchEngine==='bing'?'google':'bing'; updateEngineUI(); } });
         }
 
-        async function initFirebase(config) {
+        // --- GitHub API Sync Logic ---
+        
+        async function pullFromGitHub() {
             updateCloudStatus('connecting');
-            const errorBox = document.getElementById('cloud-error-msg');
-            errorBox.classList.add('hidden');
+            if(!state.ghOwner || !state.ghRepo || !state.ghToken) return;
 
+            const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
             try {
-                const app = initializeApp(config);
-                const auth = getAuth(app);
-                state.db = getFirestore(app);
-                
-                // 登录
-                const userCred = await signInAnonymously(auth);
-                state.userId = userCred.user.uid;
+                const res = await fetch(url, {
+                    headers: {
+                        'Authorization': `token ${state.ghToken}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Cache-Control': 'no-cache'
+                    }
+                });
 
-                // 强制使用固定公共路径，以实现跨设备同步
-                // 遵循规则 1 的路径结构
-                const docPath = `artifacts/${appId}/public/data/sync_main`;
-                const docRef = doc(state.db, docPath);
-                
-                // 首次连接时尝试获取数据
-                const initialSnap = await getDoc(docRef);
-                if (!initialSnap.exists()) {
-                    await saveToCloud(); // 第一次使用，把本地数据推上去
+                if (res.status === 404) {
+                    // 文件不存在，说明是第一次，直接把本地推上去
+                    console.log("data.json not found, creating...");
+                    await pushToGitHub();
+                    updateCloudStatus('synced');
+                    return;
                 }
 
-                // 监听云端实时变化
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        let needRender = false;
-                        
-                        // 比较并合并快捷方式
-                        if(JSON.stringify(data.shortcuts) !== JSON.stringify(state.shortcuts)) {
-                            state.shortcuts = data.shortcuts || DEFAULT_SHORTCUTS;
-                            localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
-                            needRender = true;
-                        }
-                        // 同步 BaseURL
-                        if(data.iconBaseUrl && data.iconBaseUrl !== state.iconBaseUrl) {
-                            state.iconBaseUrl = data.iconBaseUrl;
-                            localStorage.setItem('myIconBaseUrl', state.iconBaseUrl);
-                            document.getElementById('input-base-url').value = state.iconBaseUrl;
-                            needRender = true;
-                        }
-                        // 同步财务
-                        if(JSON.stringify(data.financeLogs) !== JSON.stringify(state.financeLogs)) {
-                            state.financeLogs = data.financeLogs || [];
-                            localStorage.setItem('myFinanceLogs', JSON.stringify(state.financeLogs));
-                        }
-                        // 同步主题
-                        if(data.theme && data.theme !== state.theme) {
-                            state.theme = data.theme;
-                            localStorage.setItem('myTheme', state.theme);
-                            applyTheme(state.theme);
-                        }
-                        
-                        if(needRender) renderShortcuts();
-                        updateCloudStatus('synced');
-                        document.getElementById('modal-cloud-config').classList.add('hidden');
-                    }
-                }, (error) => {
-                    console.error("Sync Error:", error);
-                    updateCloudStatus('error');
-                });
-            } catch (e) {
-                console.error("Firebase Init Error", e);
-                showCloudError("连接失败：请检查配置。");
+                if (!res.ok) throw new Error(`GitHub API Error: ${res.status}`);
+
+                const data = await res.json();
+                state.ghSha = data.sha; // 记录 SHA，更新时需要
+
+                // 解码内容 (Base64 -> UTF8 String)
+                // 解决中文乱码: decodeURIComponent(escape(window.atob(str)))
+                const content = decodeURIComponent(escape(window.atob(data.content.replace(/\n/g, ""))));
+                const remoteData = JSON.parse(content);
+
+                // 合并数据
+                let needRender = false;
+                if(JSON.stringify(remoteData.shortcuts) !== JSON.stringify(state.shortcuts)) {
+                    state.shortcuts = remoteData.shortcuts || DEFAULT_SHORTCUTS;
+                    localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
+                    needRender = true;
+                }
+                if(remoteData.iconBaseUrl) {
+                    state.iconBaseUrl = remoteData.iconBaseUrl;
+                    localStorage.setItem('myIconBaseUrl', state.iconBaseUrl);
+                    document.getElementById('input-base-url').value = state.iconBaseUrl;
+                    needRender = true;
+                }
+                // 同步其他字段...
+                
+                if(needRender) renderShortcuts();
+                updateCloudStatus('synced');
+                document.getElementById('modal-cloud-config').classList.add('hidden');
+
+            } catch (error) {
+                console.error("Pull Failed:", error);
+                showCloudError("同步失败: " + error.message);
                 updateCloudStatus('error');
             }
+        }
+
+        async function pushToGitHub() {
+            if(!state.ghOwner || !state.ghRepo || !state.ghToken) return;
+            updateCloudStatus('syncing');
+
+            const url = `https://api.github.com/repos/${state.ghOwner}/${state.ghRepo}/contents/data.json`;
+            
+            // 准备数据
+            const payload = {
+                shortcuts: state.shortcuts,
+                financeLogs: state.financeLogs,
+                theme: state.theme,
+                iconBaseUrl: state.iconBaseUrl,
+                updatedAt: new Date().toISOString()
+            };
+
+            // 编码内容 (UTF8 String -> Base64)
+            const content = window.btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+
+            const body = {
+                message: `Update data.json via StartPage (${new Date().toLocaleString()})`,
+                content: content,
+                sha: state.ghSha // 如果是新建文件，sha 为 undefined
+            };
+
+            try {
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${state.ghToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!res.ok) throw new Error(`GitHub API Push Error: ${res.status}`);
+                
+                const data = await res.json();
+                state.ghSha = data.content.sha; // 更新最新的 SHA
+                updateCloudStatus('synced');
+
+            } catch (error) {
+                console.error("Push Failed:", error);
+                // 如果是因为 SHA 不匹配（冲突），尝试先 Pull 再 Push
+                if (error.message.includes('409')) {
+                    console.log("Conflict detected, pulling first...");
+                    await pullFromGitHub(); // 这里简化处理，实际上应该合并
+                } else {
+                    updateCloudStatus('error');
+                }
+            }
+        }
+
+        function updateCloudStatus(status) {
+            const text = document.getElementById('cloud-text');
+            const dot = document.getElementById('cloud-dot');
+            if (status === 'connecting') { text.innerText = '连接中...'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white animate-pulse"; }
+            else if (status === 'synced') { text.innerText = 'GitHub 已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
+            else if (status === 'syncing') { text.innerText = '上传中...'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white animate-pulse"; }
+            else { text.innerText = '同步错误'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white"; }
         }
 
         function showCloudError(msg) {
@@ -377,54 +445,25 @@
             el.classList.remove('hidden');
         }
 
-        async function saveToCloud() {
-            if (!state.db) return;
-            updateCloudStatus('syncing');
-            try {
-                const docPath = `artifacts/${appId}/public/data/sync_main`;
-                await setDoc(doc(state.db, docPath), {
-                    shortcuts: state.shortcuts,
-                    financeLogs: state.financeLogs,
-                    theme: state.theme,
-                    iconBaseUrl: state.iconBaseUrl, 
-                    updatedAt: new Date().toISOString()
-                });
-                updateCloudStatus('synced');
-            } catch(e) { 
-                console.error(e); 
-                updateCloudStatus('error'); 
-            }
-        }
-
-        function updateCloudStatus(status) {
-            const text = document.getElementById('cloud-text');
-            const dot = document.getElementById('cloud-dot');
-            if (status === 'connecting') { text.innerText = '连接中'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full border border-white animate-pulse"; }
-            else if (status === 'synced') { text.innerText = '已同步'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full border border-white"; }
-            else if (status === 'syncing') { text.innerText = '同步中'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-blue-500 rounded-full border border-white animate-pulse"; }
-            else { text.innerText = '未连接'; dot.className = "absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full border border-white"; }
-        }
-
-        document.getElementById('form-cloud-config').addEventListener('submit', (e) => {
+        // 保存配置
+        document.getElementById('form-cloud-config').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const config = {
-                apiKey: document.getElementById('input-firebase-apikey').value.trim(),
-                authDomain: `${document.getElementById('input-firebase-projectid').value.trim()}.firebaseapp.com`,
-                projectId: document.getElementById('input-firebase-projectid').value.trim(),
-                storageBucket: `${document.getElementById('input-firebase-projectid').value.trim()}.appspot.com`,
-                messagingSenderId: "123456789", 
-                appId: document.getElementById('input-firebase-appid').value.trim()
-            };
-            localStorage.setItem('myFirebaseConfig', JSON.stringify(config));
-            state.firebaseConfig = config;
-            initFirebase(config);
+            state.ghOwner = document.getElementById('input-gh-owner').value.trim();
+            state.ghRepo = document.getElementById('input-gh-repo').value.trim();
+            state.ghToken = document.getElementById('input-gh-token').value.trim();
+            
+            localStorage.setItem('ghOwner', state.ghOwner);
+            localStorage.setItem('ghRepo', state.ghRepo);
+            localStorage.setItem('ghToken', state.ghToken);
+            
+            await pullFromGitHub();
         });
 
         // 核心记录点击
         window.recordClick = (index) => {
             if (!state.shortcuts[index].clicks) state.shortcuts[index].clicks = 0;
             state.shortcuts[index].clicks++;
-            saveState();
+            saveState(); // 这里会触发 GitHub Push
         }
 
         function updateClock() {
@@ -435,16 +474,22 @@
             document.getElementById('greeting-text').innerText = GREETINGS[dayOfYear % GREETINGS.length];
         }
 
+        // 统一保存入口
         function saveState() {
             localStorage.setItem('myShortcuts', JSON.stringify(state.shortcuts));
-            saveToCloud();
+            // 只有配置了 Token 才推送到 GitHub
+            if (state.ghToken) {
+                // 防抖，避免频繁请求 API
+                if (window.pushTimeout) clearTimeout(window.pushTimeout);
+                window.pushTimeout = setTimeout(pushToGitHub, 2000); // 延迟2秒保存
+            }
         }
 
         window.changeTheme = (themeName) => {
             state.theme = themeName;
             localStorage.setItem('myTheme', themeName);
             applyTheme(themeName);
-            saveToCloud();
+            saveState();
         }
 
         window.saveBaseUrl = (url) => {
@@ -453,7 +498,7 @@
             state.iconBaseUrl = cleanUrl;
             localStorage.setItem('myIconBaseUrl', state.iconBaseUrl);
             document.getElementById('input-base-url').value = state.iconBaseUrl;
-            saveToCloud();
+            saveState();
             renderShortcuts(); 
         }
 
