@@ -10,7 +10,7 @@
       "name": "抖音",
       "url": "https://www.douyin.com/",
       "customIcon": "douyin.png",
-      "clicks": 4
+      "clicks": 5
     },
     {
       "name": "Gemini",
@@ -45,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-08T01:42:04.063Z"
+  "updatedAt": "2026-01-08T03:54:59.327Z"
 }
