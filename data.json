@@ -4,7 +4,7 @@
       "name": "抖音",
       "url": "https://www.douyin.com/",
       "customIcon": "douyin.png",
-      "clicks": 8
+      "clicks": 9
     },
     {
       "name": "哔哩哔哩",
@@ -45,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-09T08:43:40.409Z"
+  "updatedAt": "2026-01-09T09:14:44.613Z"
 }
