@@ -4,13 +4,13 @@
       "name": "抖音",
       "url": "https://www.douyin.com/",
       "customIcon": "douyin.png",
-      "clicks": 12
+      "clicks": 13
     },
     {
       "name": "哔哩哔哩",
       "url": "https://www.bilibili.com/",
       "customIcon": "bilibili.png",
-      "clicks": 5
+      "clicks": 6
     },
     {
       "name": "GitHub",
@@ -45,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-10T03:15:20.596Z"
+  "updatedAt": "2026-01-10T06:19:51.879Z"
 }
