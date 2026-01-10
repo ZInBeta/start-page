@@ -22,7 +22,7 @@
       "name": "Gemini",
       "url": "https://gemini.google.com/",
       "customIcon": "gemini.png",
-      "clicks": 2
+      "clicks": 3
     },
     {
       "name": "豆包",
@@ -45,5 +45,5 @@
   "financeLogs": [],
   "theme": "theme-light",
   "iconBaseUrl": "https://cdn.jsdelivr.net/gh/ZInBeta/start-page@main/icons/",
-  "updatedAt": "2026-01-10T02:31:01.608Z"
+  "updatedAt": "2026-01-10T02:32:36.264Z"
 }
