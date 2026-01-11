@@ -4,13 +4,13 @@
       "name": "抖音",
       "url": "https://www.douyin.com/",
       "iconName": "monitor-play",
-      "clicks": 7
+      "clicks": 8
     },
     {
       "name": "斗鱼",
       "url": "https://www.douyu.com/",
       "iconName": "coffee",
-      "clicks": 7
+      "clicks": 8
     },
     {
       "name": "Gemini",
@@ -80,5 +80,5 @@
   ],
   "theme": "theme-light",
   "iconBaseUrl": "",
-  "updatedAt": "2026-01-11T13:21:15.517Z"
+  "updatedAt": "2026-01-11T13:25:54.998Z"
 }
