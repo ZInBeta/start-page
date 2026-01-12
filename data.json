@@ -4,7 +4,7 @@
       "name": "斗鱼",
       "url": "https://www.douyu.com/",
       "iconName": "coffee",
-      "clicks": 9
+      "clicks": 10
     },
     {
       "name": "抖音",
@@ -80,5 +80,5 @@
   ],
   "theme": "theme-light",
   "iconBaseUrl": "",
-  "updatedAt": "2026-01-12T13:37:25.998Z"
+  "updatedAt": "2026-01-12T13:42:33.998Z"
 }
