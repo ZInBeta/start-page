@@ -10,7 +10,7 @@
       "name": "抖音",
       "url": "https://www.douyin.com/",
       "iconName": "monitor-play",
-      "clicks": 11
+      "clicks": 12
     },
     {
       "name": "Bilibili",
@@ -80,5 +80,5 @@
   ],
   "theme": "theme-light",
   "iconBaseUrl": "",
-  "updatedAt": "2026-01-17T12:55:07.163Z"
+  "updatedAt": "2026-01-17T13:37:25.939Z"
 }
