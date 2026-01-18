@@ -16,7 +16,7 @@
       "name": "Bilibili",
       "url": "https://www.bilibili.com/",
       "iconName": "monitor-play",
-      "clicks": 5
+      "clicks": 6
     },
     {
       "name": "Gemini",
@@ -80,5 +80,5 @@
   ],
   "theme": "theme-light",
   "iconBaseUrl": "",
-  "updatedAt": "2026-01-18T12:29:52.711Z"
+  "updatedAt": "2026-01-18T12:31:08.037Z"
 }
