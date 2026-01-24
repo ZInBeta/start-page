@@ -22,13 +22,13 @@
       "name": "Gemini",
       "url": "https://gemini.google.com/",
       "iconName": "sparkles",
-      "clicks": 6
+      "clicks": 7
     },
     {
       "name": "GitHub",
       "url": "https://github.com/",
       "iconName": "github",
-      "clicks": 3
+      "clicks": 4
     },
     {
       "name": "豆包",
@@ -81,5 +81,5 @@
   ],
   "theme": "theme-light",
   "iconBaseUrl": "",
-  "updatedAt": "2026-01-24T13:04:23.244Z"
+  "updatedAt": "2026-01-24T13:19:32.246Z"
 }
