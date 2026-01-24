@@ -28,7 +28,7 @@
       "name": "GitHub",
       "url": "https://github.com/",
       "iconName": "github",
-      "clicks": 2
+      "clicks": 3
     },
     {
       "name": "豆包",
@@ -81,5 +81,5 @@
   ],
   "theme": "theme-light",
   "iconBaseUrl": "",
-  "updatedAt": "2026-01-24T12:57:33.044Z"
+  "updatedAt": "2026-01-24T13:04:23.244Z"
 }
